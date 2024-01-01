@@ -1,0 +1,14 @@
+.appBar {
+    background-color: #bdbdbd !important;
+    height: 70px;
+  }
+
+.title {
+    flex-grow: 1;
+    font-family: Georgia !important;
+    color: black;
+}
+
+.logo {
+    margin-top: 55px;
+}

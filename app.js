@@ -14,8 +14,8 @@ const initApp = () => {
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
 
-      const studentRoute = require("./routes/student_route");
-      app.use("/student", studentRoute);
+      const PropertiesRoute = require("./routes/property_route");
+      app.use("/properties", PropertiesRoute);
       resolve(app);
     });
   });
