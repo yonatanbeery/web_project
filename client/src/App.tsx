@@ -5,7 +5,7 @@ import PostsPage from './components/PostsPage';
 import Login from './components/Login';
 
 function App() {
-const  [auth, setAuth] = useState(true);
+  const [auth, setAuth] = useState<Boolean>(false);
 
   return (
     <>
@@ -14,7 +14,7 @@ const  [auth, setAuth] = useState(true);
       </div>
       {auth
         ? <PostsPage />
-        : <Login />}
+        : <Login setLogin={(x:Boolean) => setAuth(x)}/>}
     </>
   )
 }
