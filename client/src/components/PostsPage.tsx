@@ -4,11 +4,8 @@ import { FiltersOptions } from "./filters/filtersTypes";
 import {AuthContext} from "../App";
 
 const PostsPage = (filtersProp: FiltersOptions) => {
-
-    const theme = useContext(AuthContext);
-    console.log(theme);
+    const {authToken} = useContext(AuthContext);
     
-
     const [filters, setFilters] = useState<FiltersOptions>({
         city: filtersProp.city,
         dealType: filtersProp.dealType,
