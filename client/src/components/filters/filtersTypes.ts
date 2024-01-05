@@ -6,15 +6,15 @@ export const dealTypeOptions = ['rent', 'sale'] as const;
 export type DealTypeOption = typeof dealTypeOptions[number];
 
 export interface Price {
-    minPrice: number | null;
-    maxPrice: number | null;
+    minPrice?: number;
+    maxPrice?: number;
 }
 
 export interface FiltersOptions {
-    city: string;
-    dealType: DealTypeOption;
-    price: Price;
-    minBedrooms: RoomsOption;
-    minBathrooms: RoomsOption;
-    homeType: HomeTypeOption;
+    city?: string;
+    dealType?: DealTypeOption;
+    price?: Price;
+    bedrooms?: RoomsOption;
+    bathrooms?: RoomsOption;
+    homeType?: HomeTypeOption;
 }
