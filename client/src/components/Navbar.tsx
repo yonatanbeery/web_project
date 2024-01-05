@@ -10,6 +10,10 @@ const Navbar = () => {
 
     const handleCloseMenu = () => setOpenMenu(false);
 
+    const logout = () => {
+      handleCloseMenu()
+    }
+
     return (
     <AppBar className="appBar">
     <Toolbar>
@@ -19,7 +23,7 @@ const Navbar = () => {
       <Menu open={openMenu} onClose={handleCloseMenu}>
         <MenuItem onClick={handleCloseMenu}>Your Profile</MenuItem>
         <MenuItem onClick={handleCloseMenu}>Create a post</MenuItem>
-        <MenuItem onClick={handleCloseMenu}>Log out</MenuItem>
+        <MenuItem onClick={logout}>Log out</MenuItem>
       </Menu>
       <Typography variant="h4" className="title">
         Your Next Home

@@ -1,9 +1,13 @@
 import Filters from "./filters/FIlters"
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FiltersOptions } from "./filters/filtersTypes";
-
+import {AuthContext} from "../App";
 
 const PostsPage = (filtersProp: FiltersOptions) => {
+
+    const theme = useContext(AuthContext);
+    console.log(theme);
+    
 
     const [filters, setFilters] = useState<FiltersOptions>({
         city: filtersProp.city,
