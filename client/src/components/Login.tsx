@@ -1,17 +1,16 @@
 import { Button, Card, Divider, Grid, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
+import GoogleIcon from '@mui/icons-material/Google';
 
 const Login = ({setLogin}: {setLogin: (x:boolean) => void}) => {
-  const [username, setUsername] = useState<String>();
-  const [password, setPassword] = useState<String>();
+    const [username, setUsername] = useState<String>();
+    const [password, setPassword] = useState<String>();
 
-  const responseMessage = (response: CredentialResponse) => {
-        console.log(response);
-    };
-    const errorMessage = () => {
-        console.log("error");
-    };
+    const login = useGoogleLogin({
+        onSuccess: tokenResponse => console.log(tokenResponse),
+        onError: error => console.log(error)
+    });
 
     return (
         <Card sx={{ minWidth: '100vh', height: '65vh', marginTop:'5vh' }}>
@@ -28,11 +27,16 @@ const Login = ({setLogin}: {setLogin: (x:boolean) => void}) => {
                 </Grid>
                 <Divider orientation="vertical" sx={{height:'45vh'}} />
                 <Grid xs={5.9} sx={{justifyContent:'center', display:'flex', flexDirection:'column', padding:3}}>
-                    <GoogleLogin onSuccess={responseMessage} onError={errorMessage}/>
+                    <Button variant="outlined" onClick={() => login()} sx={{height:"8vh"}}>
+                        <Typography sx={{color:"black"}}>
+                            Continue with Google
+                        </Typography>
+                        <GoogleIcon sx={{marginLeft:2}}/>
+                    </Button>
                 </Grid>
                 <Grid xs={12} sx={{marginTop:2, justifyContent:'center', display:'flex'}}>
                 <Typography variant="h6" gutterBottom>
-                    dont have an account?
+                    dont have an account?  
                     <Button onClick={() => setLogin(true)}>Sign-up</Button>
                 </Typography>
                 </Grid>
