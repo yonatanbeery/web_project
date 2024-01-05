@@ -22,7 +22,7 @@ const Signup = () => {
     return (
         <Card sx={{ minWidth: '100vh', height: '75vh', marginTop:'5vh' }}>
             <Grid container spacing={1}>
-                <Grid xs={12} sx={{marginTop: 5, justifyContent:'center', alignItems: 'center', display:'flex', flexDirection:'column'}}>
+                <Grid md={12} sx={{marginTop: 5, justifyContent:'center', alignItems: 'center', display:'flex', flexDirection:'column'}}>
                     <Box>
                         <Box component="img" src={userImage} sx={{height: 125, width: 125}}/>
                         <input type="file" onChange={onFileChange}/>
