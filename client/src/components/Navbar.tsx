@@ -1,15 +1,26 @@
 import { Box, IconButton,Toolbar, Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
-import Menu from '@mui/icons-material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import './styles/navbar.css'
+import { Select, MenuItem, Menu } from '@mui/material';
+import { useState } from 'react';
 
 const Navbar = () => {
+    const [openMenu, setOpenMenu] = useState(false);
+
+    const handleCloseMenu = () => setOpenMenu(false);
+
     return (
     <AppBar className="appBar">
     <Toolbar>
-      <IconButton>
-        <Menu />
+      <IconButton onClick={() => setOpenMenu(true)}>
+        <MenuIcon />
       </IconButton>
+      <Menu open={openMenu} onClose={handleCloseMenu}>
+        <MenuItem onClick={handleCloseMenu}>Your Profile</MenuItem>
+        <MenuItem onClick={handleCloseMenu}>Create a post</MenuItem>
+        <MenuItem onClick={handleCloseMenu}>Log out</MenuItem>
+      </Menu>
       <Typography variant="h4" className="title">
         Your Next Home
       </Typography>
