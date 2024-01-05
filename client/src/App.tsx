@@ -5,16 +5,16 @@ import PostsPage from './components/PostsPage';
 import Login from './components/Login';
 
 function App() {
-const  [auth, setAuth] = useState(false);
+const  [auth, setAuth] = useState(true);
 
   return (
     <>
-    <div>
-    <Navbar/> 
-    </div>
-    {auth
-      ? <PostsPage/>
-      : <Login/>}
+      <div>
+        <Navbar /> 
+      </div>
+      {auth
+        ? <PostsPage />
+        : <Login />}
     </>
   )
 }
