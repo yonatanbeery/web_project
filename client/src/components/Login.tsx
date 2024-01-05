@@ -39,7 +39,7 @@ const Login = () => {
                 <Grid xs={12} sx={{marginTop:2, justifyContent:'center', display:'flex'}}>
                 <Typography variant="h6" gutterBottom>
                     dont have an account?  
-                    <Button onClick={() => setAuthToken("")}>Sign-up</Button>
+                    <Button href="/Signup">Sign-up</Button>
                 </Typography>
                 </Grid>
             </Grid>

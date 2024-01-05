@@ -34,7 +34,7 @@ const Navbar = () => {
         <MenuItem onClick={handleClose}>Create a post</MenuItem>
         <MenuItem onClick={logout}>Log out</MenuItem>
       </Menu>
-      <Typography variant="h4" className="title">
+      <Typography className='title' variant="h4">
         Your Next Home
       </Typography>
       <Box

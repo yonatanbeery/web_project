@@ -2,6 +2,7 @@ import Filters from "./filters/FIlters"
 import { useContext, useState } from 'react';
 import { FiltersOptions } from "./filters/filtersTypes";
 import {AuthContext} from "../App";
+import Login from "./Login";
 
 const PostsPage = (filtersProp: FiltersOptions) => {
     const {authToken} = useContext(AuthContext);
@@ -17,7 +18,9 @@ const PostsPage = (filtersProp: FiltersOptions) => {
 
     return (
         <>
-            <Filters filters={filters} setFilters={setFilters} />
+        {authToken ? 
+        <Filters filters={filters} setFilters={setFilters} />
+        : <Login/>}
         </>
     );
 };
