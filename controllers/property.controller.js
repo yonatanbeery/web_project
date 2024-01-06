@@ -1,9 +1,9 @@
-const Property = require("../models/property_model");
+const Property = require("../models/property.model");
 
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
     try {
-        let property = req.query ? await Property.find(req.query) : await Property.find();
+        const property = req.query ? await Property.find(req.query) : await Property.find();
         res.send(property);
     } catch (err) {
         res.status(500).json({ message: err.message });
