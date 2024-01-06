@@ -1,6 +1,7 @@
 import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import {AuthContext} from "../App";
+import axios from "axios";
 
 const Signup = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
@@ -13,6 +14,9 @@ const Signup = () => {
 
     const signupNewUser = () => {
         setIsSubmitted(true);
+        if(username && email && password && password === confirmPassword){
+            axios.post('http://localhost:8080/users/signup', {data:{userImage, username, email, password}});
+        }
     }
 
     const onFileChange = (event: any) => {    
