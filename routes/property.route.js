@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Property = require("../controllers/property_controller");
+const Property = require("../controllers/property.controller");
 
 router.get("/", Property.getAllProperties);
 

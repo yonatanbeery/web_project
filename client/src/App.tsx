@@ -1,21 +1,33 @@
-import { useState } from 'react'
+import { createContext, useState } from 'react'
 import Navbar from './components/Navbar';
 import './App.css'
 import PostsPage from './components/PostsPage';
-import Login from './components/Login';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import Signup from './components/Signup';
+
+export const AuthContext = createContext<{authToken: string, setAuthToken: any}>({authToken: "", setAuthToken: null});
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <PostsPage />,
+  },
+  {
+    path: "/Signup",
+    element: <Signup />,
+  },
+]);
 
 function App() {
-const  [auth, setAuth] = useState(true);
+  const [authToken, setAuthToken] = useState<string>("");
 
   return (
-    <>
-      <div>
+    <div>
+      <AuthContext.Provider value={{authToken, setAuthToken}}>
         <Navbar /> 
-      </div>
-      {auth
-        ? <PostsPage />
-        : <Login />}
-    </>
+        <RouterProvider router={router} />
+      </AuthContext.Provider>
+    </div>
   )
 }
 

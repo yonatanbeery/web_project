@@ -1,4 +1,4 @@
-const Property = require("../models/property_model");
+const Property = require("../models/property.model");
 
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");

@@ -18,6 +18,7 @@ interface FiltersProps {
 
 const Filters = (filtersProp: FiltersProps ) => {
     const {filters, setFilters, getPosts} = filtersProp;
+
     const [cities, setCities] = useState([]);
 
     useEffect(() => {fetchCities()}, []);
@@ -34,8 +35,10 @@ const Filters = (filtersProp: FiltersProps ) => {
     const updateLocation = ((location: string) => setFilters({...filters, location}));
     const updateDealType = (newDealType: FiltersOptions['dealType']) => setFilters({...filters, dealType: newDealType});
     const updatPrice = (newPrice: Price) => setFilters({...filters, price: newPrice});
-    const updateMinBedrooms = (newMinBedrooms: number) => setFilters({...filters, minBedrooms: newMinBedrooms as RoomsOption});
-    const updateMinBathrooms = (newMinBathrooms: number) => setFilters({...filters, minBathrooms: newMinBathrooms as RoomsOption});
+
+    const updateMinBedrooms = (updatedBedrooms: number) => setFilters({...filters, bathrooms: updatedBedrooms as RoomsOption});
+    const updateMinBathrooms = (updatedBathrooms: number) => setFilters({...filters, bathrooms: updatedBathrooms as RoomsOption});
+
     const updateHomeType = (newHomeType: FiltersOptions['homeType']) => setFilters({...filters, homeType: newHomeType});
 
     return (
@@ -62,7 +65,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         updatPrice({
                             minPrice: parseInt(event.target.value) || null,
-                            maxPrice: filters.price.maxPrice});
+                            maxPrice: filters.price?.maxPrice});
                     }}
                 />
             </Filter>
@@ -72,7 +75,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                     label="Max Price"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         updatPrice({
-                            minPrice: filters.price.minPrice,
+                            minPrice: filters.price?.minPrice,
                             maxPrice: parseInt(event.target.value) || null});  
                     }}
                 />
