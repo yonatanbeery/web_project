@@ -2,10 +2,21 @@ const Property = require("../models/property_model");
 
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
+    
+    const query = {
+        ...(req.query.price?.maxPrice && { price: { $lte: req.query.price.maxPrice } }),
+        ...(req.query.price?.minPrice && { price: { $gte: req.query.price.minPrice } }),
+        ...(req.query.location && { location: req.query.location }),
+        ...(req.query.dealType && { dealType: req.query.dealType }),
+        ...(req.query.homeType && { homeType: req.query.homeType }),
+        ...(req.query.minBedrooms && { bedrooms: { $gte: req.query.minBedrooms } }),
+        ...(req.query.minBathrooms && { bathrooms: { $gte: req.query.minBathrooms } }),
+    };
+
     try {
-        let property = req.query ? await Property.find(req.query) : await Property.find();
-        res.send(property);
-    } catch (err) {
+        let properties = req.query ? await Property.find(query) : await Property.find();
+        res.send(properties);
+    } catch (err) { 
         res.status(500).json({ message: err.message });
     }
 };

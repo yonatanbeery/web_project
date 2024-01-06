@@ -1,9 +1,10 @@
 .filters {
     display: flex;
     width: 1400px;
+    margin-top: 10px;
 }
 
 .filter {
     margin: 12PX !important;
-    width: 20%;
+    width: 17%;
 }

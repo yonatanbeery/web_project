@@ -4,45 +4,37 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import axios from 'axios';
 import Autocomplete from '@mui/material/Autocomplete';
 import './filters.css';
 import { FiltersOptions, Price, RoomsOption, homeTypeOptions, roomsOptions } from './filtersTypes';
-
+import Button from '@mui/material/Button';
+import { getCities } from '../../services/citiesService';
 
 interface FiltersProps {
     filters: FiltersOptions;
     setFilters: (filters: FiltersOptions) => void;
+    getPosts: (filters: FiltersOptions) => void;
 }
 
 const Filters = (filtersProp: FiltersProps ) => {
-
-    const {filters, setFilters, searchPosts} = filtersProp;
+    const {filters, setFilters, getPosts} = filtersProp;
     const [cities, setCities] = useState([]);
-    useEffect(() => {getCities()}, []);
 
-    const getCities = async () => {
-        const data = {
-            resource_id: 'd4901968-dad3-4845-a9b0-a57d027f11ab',
-            limit: 32000,
-        };
+    useEffect(() => {fetchCities()}, []);
 
+    const fetchCities = async () => {
         try {
-            const response = await axios.get('https://data.gov.il/api/3/action/datastore_search', {
-                params: data,
-            });
-
-            setCities(response.data.result.records.map((city: { [x: string]: any; }) => city['שם_ישוב_לועזי']));
-
+            const response = await getCities();
+            response && setCities((response.data.result.records.map((location: { [x: string]: any; }) => location['שם_ישוב_לועזי']))); 
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    const updateCity = ((city: string) => setFilters({...filters, city}));
+    const updateLocation = ((location: string) => setFilters({...filters, location}));
     const updateDealType = (newDealType: FiltersOptions['dealType']) => setFilters({...filters, dealType: newDealType});
     const updatPrice = (newPrice: Price) => setFilters({...filters, price: newPrice});
-    const updateMinBedrooms = (newMinBedrooms: number) => setFilters({...filters, minBathrooms: newMinBedrooms as RoomsOption});
+    const updateMinBedrooms = (newMinBedrooms: number) => setFilters({...filters, minBedrooms: newMinBedrooms as RoomsOption});
     const updateMinBathrooms = (newMinBathrooms: number) => setFilters({...filters, minBathrooms: newMinBathrooms as RoomsOption});
     const updateHomeType = (newHomeType: FiltersOptions['homeType']) => setFilters({...filters, homeType: newHomeType});
 
@@ -53,7 +45,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                 disablePortal
                 options={cities}
                 renderInput={(params) => <TextField {...params} label="City" />}
-                onChange={(event: any) => updateCity(event.target.innerText)}
+                onChange={(event: any) => updateLocation(event.target.innerText || null)}
                 popupIcon={<SearchIcon />}
                 />
             </Filter>
@@ -69,7 +61,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                     label="Min Price"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         updatPrice({
-                            minPrice: parseInt(event.target.value),
+                            minPrice: parseInt(event.target.value) || null,
                             maxPrice: filters.price.maxPrice});
                     }}
                 />
@@ -81,7 +73,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                         updatPrice({
                             minPrice: filters.price.minPrice,
-                            maxPrice: parseInt(event.target.value)});  
+                            maxPrice: parseInt(event.target.value) || null});  
                     }}
                 />
             </Filter>
@@ -100,6 +92,7 @@ const Filters = (filtersProp: FiltersProps ) => {
                     {homeTypeOptions.map(option => <MenuItem value={option}>{option}</MenuItem>)}
                 </Select>
             </Filter>
+            <Button variant="contained" onClick={() => getPosts(filters)} className='filter'>Search</Button>
         </div>
     );
 };

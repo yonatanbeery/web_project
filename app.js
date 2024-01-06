@@ -2,6 +2,7 @@ const env = require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require('cors');
 
 const initApp = () => {
   const promise = new Promise((resolve, reject) => {
@@ -10,6 +11,7 @@ const initApp = () => {
     db.on("error", (error) => console.error(error));
     mongoose.connect(process.env.DB_URL).then(() => {
       const app = express();
+      app.use(cors());
 
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));

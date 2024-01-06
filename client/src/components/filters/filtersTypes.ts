@@ -11,10 +11,10 @@ export interface Price {
 }
 
 export interface FiltersOptions {
-    city: string;
-    dealType: DealTypeOption;
+    location: string | null;
+    dealType: DealTypeOption | null;
     price: Price;
-    minBedrooms: RoomsOption;
-    minBathrooms: RoomsOption;
-    homeType: HomeTypeOption;
+    minBedrooms: RoomsOption | null;
+    minBathrooms: RoomsOption | null;
+    homeType: HomeTypeOption | null;
 }

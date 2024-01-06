@@ -4,13 +4,13 @@ const DealType = mongoose.Schema.Types.String;
 DealType.enumValues = ['rent', 'sale'];
 const PropertyType = mongoose.Schema.Types.String;
 PropertyType.enumValues = [
-  'house',
-  'townhome',
-  'multi-family',
-  'condos/co-ops',
-  'lots/land',
-  'apartment',
-  'manufactured'
+    'house',
+    'townhome',
+    'multi-family',
+    'condos/co-ops',
+    'lots/land',
+    'apartment',
+    'manufactured'
 ];
 
 const ContactDetailsSchema = new mongoose.Schema({
@@ -18,18 +18,18 @@ const ContactDetailsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    phone_number: {
+    phoneNumber: {
         type: String,
         required: true
     },
-    Email_address: {
+    EmailAddress: {
         type: String,
         required: true
     }
 });
 
 const PropertySchema = new mongoose.Schema({
-    deal_type: {
+    dealType: {
         type: DealType,
         required: true
     },
@@ -41,11 +41,11 @@ const PropertySchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    bedrooms_number: {
+    bedrooms: {
         type: Number,
         required: true
     },
-    bathrooms_number: {
+    bathrooms: {
         type: Number,
         required: true
     },
@@ -53,16 +53,20 @@ const PropertySchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    property_type: {
+    propertyType: {
         type: PropertyType,
         required: true
     },
-    contact_details: {
+    contactDetails: {
         type: ContactDetailsSchema,
         required: true
     },
-    free_text: {
+    freeText: {
         type: String,
+        required: false
+    },
+    comments: {
+        type: [String],
         required: false
     }
 });
