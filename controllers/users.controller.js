@@ -5,9 +5,8 @@ const login = async (req, res) => {
     console.log("login request");
     try {
         const {username, password} = req.body.data;
-        const user = await User.findOne(username, password);
-        console.log(user);
-        user ? res.status(200).send() : res.status(403).send()
+        const user = await User.findOne({username, password});
+        user ? res.status(200).send({"authToken": "token"}) : res.status(403).send()
     } catch (err) {
         res.status(403).json({ message: err.message });
     }
@@ -26,7 +25,7 @@ const signup = async (req, res) => {
            }
             console.log("Image saved.");
            });
-        user ? res.status(200).send() : res.status(403).send()
+        user ? res.status(200).send({"authToken": "token"}) : res.status(403).send()
     } catch (err) {
         res.status(403).json({ message: err.message });
     }
