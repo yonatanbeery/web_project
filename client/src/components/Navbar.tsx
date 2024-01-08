@@ -2,13 +2,12 @@ import { Box, IconButton,Toolbar, Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
 import './styles/navbar.css'
-import { Select, MenuItem, Menu } from '@mui/material';
+import { MenuItem, Menu } from '@mui/material';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
-import React from 'react';
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {setAuthToken} = useContext(AuthContext);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

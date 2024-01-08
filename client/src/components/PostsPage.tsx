@@ -8,10 +8,12 @@ import { Typography } from "@mui/material";
 import { FiltersOptions } from "./filters/filtersTypes";
 import {AuthContext} from "../App";
 import Login from "./Login";
+import PostDetailsCard from "./PostDetailsCard";
 
 const PostsPage = (filtersProp: FiltersOptions) => {
     const {authToken} = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
+    const [openPost, setOpenPost] = useState<Post | null>();
     const [filters, setFilters] = useState<FiltersOptions>({
         location: filtersProp.location,
         dealType: filtersProp.dealType,
@@ -19,14 +21,6 @@ const PostsPage = (filtersProp: FiltersOptions) => {
         bedrooms: filtersProp.bedrooms,
         bathrooms: filtersProp.bathrooms,
         homeType: filtersProp.homeType
-
-        // const [filters, setFilters] = useState<FiltersOptions>(Object.keys(filtersProp).length ? filtersProp : {
-        //     location: null,
-        //     dealType: null,
-        //     price: {minPrice: null, maxPrice: null},
-        //     minBedrooms: null,
-        //     minBathrooms: null,
-        //     homeType: null
     });
     
     useEffect(() => {fetchPosts();}, []);
@@ -45,13 +39,18 @@ const PostsPage = (filtersProp: FiltersOptions) => {
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>
                     {posts.length
-                        ? posts.map((post: Post) => <PostBox  {...post} />) 
+                        ? posts.map((post: Post) => <PostBox  {...{post, setOpenPost}} />) 
                         : <Typography className="noResults" variant="h4" color="text.secondary">
                             We couldn't find a property that matches your search... <br />
                             Please try to modify your selections.
                         </Typography>
                     }
                 </div>
+                {openPost && 
+                    <>
+                        <PostDetailsCard {...{openPost, setOpenPost}} />
+                    </>
+                }
             </>
             :  <Login/>
 

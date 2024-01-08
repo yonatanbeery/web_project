@@ -5,10 +5,17 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import './styles/postsPage.css'
 
-const PostBox = (props: Post) => {
-    const {location, dealType, price, bedrooms, bathrooms, homeType, area, comments} = props;
+interface PostProps {
+    post: Post;
+    setOpenPost: (post: Post) => void;
+}
+
+const PostBox = (props: PostProps) => {
+    const { post, setOpenPost } = props;
+    const { location, dealType, price, bedrooms, bathrooms, homeType, area, comments } = post;
+
     return (
-        <Card className='postBox'>
+        <Card className='postBox' onClick={() =>setOpenPost(post)}>
             <CardMedia 
                 className='boxPhoto'
                 image="/static/images/cards/contemplative-reptile.jpg"

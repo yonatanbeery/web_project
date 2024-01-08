@@ -7,6 +7,7 @@ interface ContactDetails {
 }
 
 export interface Post {
+    photos: any[];
     location: string;
     dealType: DealTypeOption;
     price: number;
@@ -16,4 +17,5 @@ export interface Post {
     area: number;
     contactDetails?: ContactDetails;
     comments?: string[];
+    freeText?: string
 }
