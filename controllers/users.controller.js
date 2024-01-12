@@ -14,7 +14,14 @@ const login = async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 {expiresIn: "1h"}
             );
-            user ? res.status(200).send({"accessToken": accessToken}) : res.status(403).send()
+            const refreshToken = jwt.sign(
+                {'_id': user._id},
+                process.env.REFRESH_TOKEN_SECRET
+            );
+            if (!user.tokens) user.tokens = [refreshToken];
+            else user.tokens.push(refreshToken);
+            await user.save();
+            user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken}) : res.status(403).send()
         } else throw new Error("unauthorized");
     } catch (err) {
         res.status(403).json({ message: err.message });
