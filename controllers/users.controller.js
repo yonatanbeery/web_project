@@ -1,7 +1,7 @@
 const fs = require("fs");
 const User = require("../models/users.model");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 const login = async (req, res) => {
     console.log("login request");
@@ -10,8 +10,9 @@ const login = async (req, res) => {
         const user = await User.findOne({username});
         if (await bcrypt.compare(password, user.password)) {
             const accessToken = jwt.sign(
-                {'_id': user.id},
-                process.env.ACCESS_TOKEN_SECRET
+                {'_id': user._id},
+                process.env.ACCESS_TOKEN_SECRET,
+                {expiresIn: "1h"}
             );
             user ? res.status(200).send({"accessToken": accessToken}) : res.status(403).send()
         } else throw new Error("unauthorized");
@@ -30,8 +31,7 @@ const signup = async (req, res) => {
             if (await User.findOne({username})) {
                 throw new Error("User already exists");
             } else {
-                const salt = await bcrypt.genSalt(10);
-                const encryptedPassword = await bcrypt.hash(password, salt);
+                const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
                 fs.writeFile('./photos/users/' + username + '.jpeg', userImage, (error) => {
                     if (error) {
