@@ -18,7 +18,7 @@ const Signup = () => {
         setIsSubmitted(true);
         if(username && email && password && password === confirmPassword){
             axios.post('http://localhost:8080/users/signup', {data:{userImage, username, email, password}}).then((res) => {
-                setAuthToken(res.data.authToken);
+                setAuthToken(res.data.accessToken);
                 navigate("/");
             });
         }

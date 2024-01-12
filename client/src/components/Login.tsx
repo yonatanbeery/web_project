@@ -17,7 +17,7 @@ const Login = () => {
 
     const loginWithUsername = () => {
         axios.post('http://localhost:8080/users/login', {data:{username, password}}).then((res) => {
-            setAuthToken(res.data.authToken);
+            setAuthToken(res.data.accessToken);
         });
     }
 
