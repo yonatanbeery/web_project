@@ -26,7 +26,7 @@ function App() {
   const [authToken, setAuthToken] = useState<authTokenType>({accessToken:"", refreshToken:""});
 
   useEffect(() => {
-    if(authToken) {
+    if(authToken.accessToken && authToken.refreshToken) {
       setTimeout(() => {
         console.log({authToken});
         

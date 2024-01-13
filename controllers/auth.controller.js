@@ -120,5 +120,6 @@ const generateTokens = (user) => {
 module.exports = {
     login,
     signup,
-    refreshToken
+    refreshToken,
+    logout
 };

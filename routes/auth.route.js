@@ -8,4 +8,6 @@ router.post("/signup", Users.signup);
 
 router.post("/refreshToken", Users.refreshToken);
 
+router.post("/logout", Users.logout);
+
 module.exports = router;

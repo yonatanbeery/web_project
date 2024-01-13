@@ -5,10 +5,11 @@ import './styles/navbar.css'
 import { MenuItem, Menu } from '@mui/material';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
+import axios from 'axios';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const {setAuthToken} = useContext(AuthContext);
+  const {authToken, setAuthToken} = useContext(AuthContext);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -18,7 +19,11 @@ const Navbar = () => {
   };
 
     const logout = () => {
-      setAuthToken("");
+      axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
+            authorization: authToken.refreshToken
+        }}).then((_) => {
+          setAuthToken({accessToken:"", refreshToken:""});
+        }); 
       handleClose();
     }
 
