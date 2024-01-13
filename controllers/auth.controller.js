@@ -9,15 +9,7 @@ const login = async (req, res) => {
         const {username, password} = req.body.data;
         const user = await User.findOne({username});
         if (await bcrypt.compare(password, user.password)) {
-            const accessToken = jwt.sign(
-                {'_id': user._id},
-                process.env.ACCESS_TOKEN_SECRET,
-                {expiresIn: "1h"}
-            );
-            const refreshToken = jwt.sign(
-                {'_id': user._id},
-                process.env.REFRESH_TOKEN_SECRET
-            );
+            const {accessToken, refreshToken} = generateTokens(user);
             if (!user.tokens) user.tokens = [refreshToken];
         
             else user.tokens.push(refreshToken);
@@ -31,35 +23,24 @@ const login = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     console.log("new access token request");
-    const refreshToken = req.headers['authorization'];
-    console.log(refreshToken);
-    if(!refreshToken) return res.status(401).send();
+    const oldRrefreshToken = req.headers['authorization'];
+    if(!oldRrefreshToken) return res.status(401).send();
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
+    jwt.verify(oldRrefreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
         if (err) return res.status(403).json({ message: err.message });
         try {
             const user = await User.findById(userInfo._id);
             if (!user) return res.status(403).send("Invalid request");
-            if (!user.tokens.includes(refreshToken)) {
+            if (!user.tokens.includes(oldRrefreshToken)) {
                 user.tokens = [];
                 await user.save();
                 return res.status(403).send("Invalid request");
             }
-
-            const accessToken = jwt.sign(
-                {'_id': user._id},
-                process.env.ACCESS_TOKEN_SECRET,
-                {expiresIn: "1h"}
-            );
-            const refreshToken = jwt.sign(
-                {'_id': user._id},
-                process.env.REFRESH_TOKEN_SECRET
-            );
+            const {accessToken, refreshToken} = generateTokens(user);
             
-            if (!user.tokens) user.tokens = [refreshToken];
-            else user.tokens.push(refreshToken);
+            user.tokens[user.tokens.indexOf(oldRrefreshToken)] = refreshToken;
             await user.save();
-            user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken}) : res.status(403).send()
+            res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
         } catch (err) {
             res.status(403).json({ message: err.message });
         }
@@ -99,12 +80,42 @@ const signup = async (req, res) => {
 
 const logout = async (req, res) => {
     console.log("logout request");
-    try {
-        res.status(200).send();
-    } catch (err) {
-        res.status(403).json({ message: err.message });
-    }
+    const rrefreshToken = req.headers['authorization'];
+    if(!rrefreshToken) return res.status(401).send();
+
+    jwt.verify(rrefreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
+        if (err) return res.status(403).json({ message: err.message });
+        try {
+            const user = await User.findById(userInfo._id);
+            if (!user) return res.status(403).send("Invalid request");
+            if (!user.tokens.includes(rrefreshToken)) {
+                user.tokens = [];
+                await user.save();
+                return res.status(403).send("Invalid request");
+            }
+            const {accessToken, refreshToken} = generateTokens(user);
+            
+            user.tokens.splice(user.tokens.indexOf(rrefreshToken), 1);
+            await user.save();
+            res.status(200).send();
+        } catch (err) {
+            res.status(403).json({ message: err.message });
+        }
+    });
 };
+
+const generateTokens = (user) => {
+    const accessToken = jwt.sign(
+        {'_id': user._id},
+        process.env.ACCESS_TOKEN_SECRET,
+        {expiresIn: "1h"}
+    );
+    const refreshToken = jwt.sign(
+        {'_id': user._id},
+        process.env.REFRESH_TOKEN_SECRET
+    );
+    return {accessToken, refreshToken};
+}
 
 module.exports = {
     login,

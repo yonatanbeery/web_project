@@ -11,13 +11,13 @@ const Login = () => {
     const {setAuthToken} = useContext(AuthContext);
 
     const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse: TokenResponse) => setAuthToken(tokenResponse.access_token),
+        onSuccess: (tokenResponse: TokenResponse) => setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""}),
         onError: () => console.log("error")
     });
 
     const loginWithUsername = () => {
         axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
-            setAuthToken(res.data.accessToken);
+            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
         });
     }
 

@@ -5,7 +5,10 @@ import PostsPage from './components/PostsPage';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Signup from './components/Signup';
 
-export const AuthContext = createContext<{authToken: string, setAuthToken: any}>({authToken: "", setAuthToken: null});
+export type authTokenType = {accessToken:string, refreshToken:string}
+
+export const AuthContext = createContext<{authToken: authTokenType, setAuthToken: any}>(
+  {authToken: {accessToken:"", refreshToken:""}, setAuthToken: null});
 
 const router = createBrowserRouter([
   {
@@ -19,7 +22,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [authToken, setAuthToken] = useState<string>("");
+  const [authToken, setAuthToken] = useState<authTokenType>({accessToken:"", refreshToken:""});
 
   return (
     <div>
