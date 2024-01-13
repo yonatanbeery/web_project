@@ -80,22 +80,21 @@ const signup = async (req, res) => {
 
 const logout = async (req, res) => {
     console.log("logout request");
-    const rrefreshToken = req.headers['authorization'];
-    if(!rrefreshToken) return res.status(401).send();
+    const refreshToken = req.headers['authorization'];
+    if(!refreshToken) return res.status(401).send();
 
-    jwt.verify(rrefreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
         if (err) return res.status(403).json({ message: err.message });
         try {
             const user = await User.findById(userInfo._id);
             if (!user) return res.status(403).send("Invalid request");
-            if (!user.tokens.includes(rrefreshToken)) {
+            if (!user.tokens.includes(refreshToken)) {
                 user.tokens = [];
                 await user.save();
                 return res.status(403).send("Invalid request");
             }
-            const {accessToken, refreshToken} = generateTokens(user);
             
-            user.tokens.splice(user.tokens.indexOf(rrefreshToken), 1);
+            user.tokens.splice(user.tokens.indexOf(refreshToken), 1);
             await user.save();
             res.status(200).send();
         } catch (err) {

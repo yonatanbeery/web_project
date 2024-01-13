@@ -4,19 +4,26 @@ import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import GoogleIcon from '@mui/icons-material/Google';
 import {AuthContext} from "../App";
 import axios from 'axios';
+import { useCookies } from "react-cookie";
+import moment from "moment";
 
 const Login = () => {
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
     const [username, setUsername] = useState<String>();
     const [password, setPassword] = useState<String>();
     const {setAuthToken} = useContext(AuthContext);
 
     const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse: TokenResponse) => setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""}),
+        onSuccess: (tokenResponse: TokenResponse) => {
+            setCookie("accessToken", tokenResponse.access_token, { path: "/" , expires: moment().add(1, 'h').toDate()});
+            setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""})},
         onError: () => console.log("error")
     });
 
     const loginWithUsername = () => {
         axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
+            setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
+            setCookie("refreshToken", res.data.refreshToken, { path: "/" });
             setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
         });
     }

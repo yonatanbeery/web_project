@@ -5,6 +5,8 @@ import PostsPage from './components/PostsPage';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Signup from './components/Signup';
 import axios from 'axios';
+import { useCookies } from "react-cookie";
+import moment from 'moment';
 
 export type authTokenType = {accessToken:string, refreshToken:string}
 
@@ -23,20 +25,22 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const [authToken, setAuthToken] = useState<authTokenType>({accessToken:"", refreshToken:""});
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
+  const [authToken, setAuthToken] = useState<authTokenType>({accessToken:cookies.accessToken, refreshToken:cookies.refreshToken});
+
 
   useEffect(() => {
     if(authToken.accessToken && authToken.refreshToken) {
-      setTimeout(() => {
-        console.log({authToken});
-        
+      setTimeout(() => {        
         axios.post('http://localhost:8080/auth/refreshToken', {} ,{headers:{
             authorization: authToken.refreshToken
         }}).then((res) => {
             console.log("refreshed", res.data);
+            setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
+            setCookie("refreshToken", res.data.refreshToken, { path: "/"});
             setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
         }); 
-      }, 1000 * 3600 - 10000);
+      }, 3600 * 1000 - 10000);
     }
   }, [authToken])
 

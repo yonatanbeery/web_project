@@ -6,10 +6,12 @@ import { MenuItem, Menu } from '@mui/material';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
 import axios from 'axios';
+import { useCookies } from 'react-cookie';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {authToken, setAuthToken} = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -22,6 +24,8 @@ const Navbar = () => {
       axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
             authorization: authToken.refreshToken
         }}).then((_) => {
+          setCookie("accessToken", "", { path: "/" });
+          setCookie("refreshToken", "", { path: "/"});
           setAuthToken({accessToken:"", refreshToken:""});
         }); 
       handleClose();
