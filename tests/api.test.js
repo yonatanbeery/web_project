@@ -3,18 +3,69 @@ const initApp = require("../app");
 const mongoose = require("mongoose");
 const User = require("../models/users.model");
 
+const username = "test";
+const password = "123";
+let accessToken = "";
+let refreshToken = "";
 let app;
+
 beforeAll(async () => {
   app = await initApp();
   console.log("beforeAll");
-  await User.deleteMany({username: "test"})
+  await User.deleteMany({username})
 });
 
 afterAll(async () => {
-  await User.deleteMany({username: "test"})
+  await User.deleteMany({username})
   await mongoose.connection.close();
 });
 
+
+describe("Auth tests", () => {
+  test("get posts without token ", async () => {
+    const res = await request(app).get("/properties");
+    expect(res.statusCode).not.toBe(200);
+  });
+
+  test("add new user ", async () => {
+    const res = await request(app).post("/auth/signup").send({
+      data:{
+        username, email:"world", password
+      }
+    });
+    console.log(res);
+    expect(res.statusCode).toBe(200);
+  });
+
+  test("add user that exists ", async () => {
+    const res = await request(app).post("/auth/signup").send({
+      data:{
+        username, email:"world", password
+      }
+    });
+    expect(res.statusCode).toBe(500);
+  });
+
+  test("login", async () => {
+    const response = await request(app).post("/auth/login").send({
+      data:{
+        username, password
+      }
+    });
+    accessToken = response.body.accessToken;
+    refreshToken = response.body.refreshToken;
+    expect(response.statusCode).toBe(200);
+    expect(accessToken).not.toBe(null);
+    expect(refreshToken).not.toBe(null);
+  });
+
+  test("refresh token ", async () => {
+    const res = await request(app).post("/auth/refreshToken").set({authorization:refreshToken}).send();
+    expect(res.statusCode).toBe(200);
+    expect(res.body.accessToken).not.toBe(null);
+    expect(res.body.refreshToken).not.toBe(null);
+  });
+});
 
 /*
 describe("Posts tests", () => {
@@ -62,27 +113,3 @@ describe("Posts tests", () => {
   });
 });*/
 
-
-describe("Auth tests", () => {
-  test("get posts without token ", async () => {
-    const res = await request(app).get("/properties");
-    expect(res.statusCode).not.toBe(200);
-  });
-  test("add new user ", async () => {
-    const res = await request(app).post("/auth/signup").send({
-      data:{
-        username:"test", email:"world", password:"123"
-      }
-    });
-    console.log(res);
-    expect(res.statusCode).toBe(200);
-  });
-  test("add user that exists ", async () => {
-    const res = await request(app).post("/auth/signup").send({
-      data:{
-        username:"test", email:"world", password:"123"
-      }
-    });
-    expect(res.statusCode).toBe(500);
-  });
-});
