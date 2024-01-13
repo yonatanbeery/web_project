@@ -1,25 +1,18 @@
 const request = require("supertest");
 const initApp = require("../app");
 const mongoose = require("mongoose");
-const Student = require("../models/student_model");
 
 let app;
 beforeAll(async () => {
   app = await initApp();
   console.log("beforeAll");
-  await Student.deleteMany();
 });
 
 afterAll(async () => {
   await mongoose.connection.close();
 });
-
-const student = {
-  name: "John Doe",
-  _id: "1234567890",
-};
-
-describe("Student tests", () => {
+/*
+describe("Posts tests", () => {
   const addStudent = async (student) => {
     const response = await request(app).post("/student").send(student);
     expect(response.statusCode).toBe(201);
@@ -61,5 +54,27 @@ describe("Student tests", () => {
   test("Test DELETE /student/:id", async () => {
     const response = await request(app).delete(`/student/${student._id}`);
     expect(response.statusCode).toBe(200);
+  });
+});*/
+
+
+describe("Auth tests", () => {
+  test("get posts without token ", async () => {
+    const res = await request(app).get("/properties");
+    expect(res.statusCode).not.toBe(200);
+  });
+  test("add new user ", async () => {
+    const res = await request(app).post("/auth/signup").send({
+      data:{
+        username:"hello", email:"world", password:"123"
+      }
+    });
+    expect(res.statusCode).toBe(200);
+  });
+  test("add user that exists ", async () => {
+    const res = await request(app).post("/auth/signup").send({
+      username:"hello", email:"world", password:"123"
+    });
+    expect(res.statusCode).toBe(500);
   });
 });

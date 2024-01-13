@@ -65,12 +65,8 @@ const signup = async (req, res) => {
                    }
                     console.log("Image saved.");
                    });
-                const accessToken = jwt.sign(
-                    {'_id': user._id},
-                    process.env.ACCESS_TOKEN_SECRET,
-                    {expiresIn: "1h"}
-                );
-                user ? res.status(200).send({"accessToken": accessToken}) : res.status(403).send()
+                   const {accessToken, refreshToken} = generateTokens(user);
+                   res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }
         }
     } catch (err) {
