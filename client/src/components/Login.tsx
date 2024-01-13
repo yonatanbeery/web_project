@@ -11,8 +11,8 @@ const Login = () => {
     const {setAuthToken} = useContext(AuthContext);
 
     const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse:TokenResponse) =>  setAuthToken(tokenResponse.access_token),
-        onError: error => console.log(error)
+        onSuccess: (tokenResponse: TokenResponse) => setAuthToken(tokenResponse.access_token),
+        onError: () => console.log("error")
     });
 
     const loginWithUsername = () => {
