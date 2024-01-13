@@ -16,13 +16,19 @@ const authenticate = async (req, res, next) => {
         }
     });
 
-    const client = new OAuth2Client();
-    axios.get('https://oauth2.googleapis.com/tokeninfo', {params:{
-        access_token:authHeaders
-    }}).then((res) => {
-        if(res.status == 200) next();
-        else errors++;
-    });
+    if (errors == 1) {
+        try{
+            const client = new OAuth2Client();
+            axios.get('https://oauth2.googleapis.com/tokeninfo', {params:{
+                access_token:authHeaders
+            }}).then((res) => {
+                if(res.status == 200) next();
+                else errors++;
+            });
+        } catch {
+            return res.status(403).send("Unauthorized");
+        }
+    }
 
     if (errors == 2) return res.status(403).send("Unauthorized");
     
