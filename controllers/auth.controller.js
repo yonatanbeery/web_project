@@ -52,25 +52,27 @@ const signup = async (req, res) => {
     try {
         const {userImage ,username, email, password} = req.body.data;
         if (!(username && email && password)) {
+            console.log("invalid user details");
             throw new Error("invalid user details");
         } else {
             if (await User.findOne({username})) {
+                console.log("User already exists");
                 throw new Error("User already exists");
             } else {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
-                fs.writeFile('./photos/users/' + username + '.jpeg', userImage, (error) => {
+                userImage && fs.writeFile('./photos/users/' + username + '.jpeg', userImage, (error) => {
                     if (error) {
                      throw error;
                    }
                     console.log("Image saved.");
                    });
                    const {accessToken, refreshToken} = generateTokens(user);
-                   res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
+                   return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }
         }
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
     }
 };
 

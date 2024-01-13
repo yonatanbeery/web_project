@@ -1,16 +1,21 @@
 const request = require("supertest");
 const initApp = require("../app");
 const mongoose = require("mongoose");
+const User = require("../models/users.model");
 
 let app;
 beforeAll(async () => {
   app = await initApp();
   console.log("beforeAll");
+  await User.deleteMany({username: "test"})
 });
 
 afterAll(async () => {
+  await User.deleteMany({username: "test"})
   await mongoose.connection.close();
 });
+
+
 /*
 describe("Posts tests", () => {
   const addStudent = async (student) => {
@@ -66,14 +71,17 @@ describe("Auth tests", () => {
   test("add new user ", async () => {
     const res = await request(app).post("/auth/signup").send({
       data:{
-        username:"hello", email:"world", password:"123"
+        username:"test", email:"world", password:"123"
       }
     });
+    console.log(res);
     expect(res.statusCode).toBe(200);
   });
   test("add user that exists ", async () => {
     const res = await request(app).post("/auth/signup").send({
-      username:"hello", email:"world", password:"123"
+      data:{
+        username:"test", email:"world", password:"123"
+      }
     });
     expect(res.statusCode).toBe(500);
   });
