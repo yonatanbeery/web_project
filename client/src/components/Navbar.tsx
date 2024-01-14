@@ -5,10 +5,14 @@ import './styles/navbar.css'
 import { MenuItem, Menu } from '@mui/material';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
+import axios from 'axios';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const {setAuthToken} = useContext(AuthContext);
+  const {authToken, setAuthToken} = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -18,7 +22,13 @@ const Navbar = () => {
   };
 
     const logout = () => {
-      setAuthToken("");
+      axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
+            authorization: authToken.refreshToken
+        }}).then(() => {
+          setCookie("accessToken", "", { path: "/" });
+          setCookie("refreshToken", "", { path: "/"});
+          setAuthToken({accessToken:"", refreshToken:""});
+        }); 
       handleClose();
     }
 
@@ -31,7 +41,7 @@ const Navbar = () => {
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
         <MenuItem onClick={handleClose}>Your Profile</MenuItem>
         <MenuItem onClick={handleClose}>Create a post</MenuItem>
-        <MenuItem onClick={logout}>Log out</MenuItem>
+        <MenuItem onClick={logout} href='/'>Log out</MenuItem>
       </Menu>
       <Typography className='title' variant="h4">
         Your Next Home

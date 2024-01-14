@@ -27,14 +27,14 @@ const PostsPage = (filtersProp: FiltersOptions) => {
 
     const fetchPosts = async () => {
         try {
-            const response = await getPosts(filters);
+            const response = await getPosts(filters, authToken.accessToken);
             response && setPosts(response.data); 
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
     return (
-        authToken 
+        authToken.accessToken
             ? <>
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>

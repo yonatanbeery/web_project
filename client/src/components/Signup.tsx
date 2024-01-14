@@ -1,8 +1,10 @@
-import { Box, Button, Card, Grid, TextField } from "@mui/material";
+import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import {AuthContext} from "../App";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import moment from "moment";
 
 const Signup = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
@@ -11,16 +13,15 @@ const Signup = () => {
     const [password, setPassword] = useState<string>();
     const [confirmPassword, setConfirmPassword] = useState<string>();
     const [isSubmitted, setIsSubmitted] = useState<boolean>();
-    const {setAuthToken} = useContext(AuthContext);
+    const [errorMessage, setErrorMessage] = useState<String>();
     const navigate = useNavigate();
 
     const signupNewUser = () => {
         setIsSubmitted(true);
         if(username && email && password && password === confirmPassword){
-            axios.post('http://localhost:8080/users/signup', {data:{userImage, username, email, password}}).then((res) => {
-                setAuthToken(res.data.authToken);
+            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then(() => {
                 navigate("/");
-            });
+            }).catch(() => setErrorMessage("Username already exists"));
         }
     }
 
@@ -41,6 +42,9 @@ const Signup = () => {
                     <TextField error={!password && isSubmitted} onChange={(prop) => setPassword(prop.target.value)} id="Password" label="Password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
                     <TextField error={!confirmPassword && isSubmitted} onChange={(prop) => setConfirmPassword(prop.target.value)} id="Confirm password" label="Confirm password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
                     <Button onClick={signupNewUser} color="primary" variant="contained" sx={{marginRight: 20, marginLeft: 20, marginTop: 4}}>Sign up</Button>
+                    {errorMessage && <Typography color="red" variant="h6" gutterBottom  sx={{marginRight: 13, marginLeft: 13}}>
+                        {errorMessage}
+                    </Typography>}
                 </Grid>
             </Grid>
         </Card>

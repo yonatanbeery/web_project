@@ -4,21 +4,29 @@ import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import GoogleIcon from '@mui/icons-material/Google';
 import {AuthContext} from "../App";
 import axios from 'axios';
+import { useCookies } from "react-cookie";
+import moment from "moment";
 
 const Login = () => {
+    const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
     const [username, setUsername] = useState<String>();
     const [password, setPassword] = useState<String>();
+    const [errorMessage, setErrorMessage] = useState<String>();
     const {setAuthToken} = useContext(AuthContext);
 
     const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse:TokenResponse) =>  setAuthToken(tokenResponse.access_token),
-        onError: error => console.log(error)
+        onSuccess: (tokenResponse: TokenResponse) => {
+            setCookie("accessToken", tokenResponse.access_token, { path: "/" , expires: moment().add(1, 'h').toDate()});
+            setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""})},
+        onError: () => console.log("error")
     });
 
     const loginWithUsername = () => {
-        axios.post('http://localhost:8080/users/login', {data:{username, password}}).then((res) => {
-            setAuthToken(res.data.authToken);
-        });
+        axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
+            setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
+            setCookie("refreshToken", res.data.refreshToken, { path: "/" });
+            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
+        }).catch(() => setErrorMessage("Incorrect username or password"));
     }
 
     return (
@@ -33,6 +41,9 @@ const Login = () => {
                     <TextField onChange={(prop) => setUsername(prop.target.value)} id="username" label="Username" variant="outlined" sx={{marginRight: 3, marginLeft: 3}} />
                     <TextField onChange={(prop) => setPassword(prop.target.value)} id="password" label="Password" variant="outlined" type="password" sx={{margin: 3}} />
                     <Button onClick={loginWithUsername} color="primary" variant="contained" sx={{marginRight: 13, marginLeft: 13}}>Submit</Button>
+                    {errorMessage && <Typography color="red" variant="h6" gutterBottom  sx={{marginRight: 13, marginLeft: 13}}>
+                        {errorMessage}
+                    </Typography>}
                 </Grid>
                 <Divider orientation="vertical" sx={{height:'45vh'}} />
                 <Grid md={5.9} sx={{justifyContent:'center', display:'flex', flexDirection:'column', padding:3}}>
