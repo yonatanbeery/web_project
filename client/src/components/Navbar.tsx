@@ -46,7 +46,9 @@ const Navbar = () => {
         <MenuItem onClick={handleClose}>
         <Link underline="none" color="black" href='/'>Create a post</Link>
           </MenuItem>
-        <MenuItem onClick={logout}>Log out</MenuItem>
+        <MenuItem onClick={logout}>
+        <Link underline="none" color="black" href='/'>Log out</Link>
+          </MenuItem>
       </Menu>
       <Typography className='title' variant="h4">
         Your Next Home

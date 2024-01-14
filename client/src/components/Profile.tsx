@@ -1,7 +1,7 @@
 import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../App";
 
 const Profile = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
@@ -10,21 +10,21 @@ const Profile = () => {
     const [password, setPassword] = useState<string>();
     const [confirmPassword, setConfirmPassword] = useState<string>();
     const [isSubmitted, setIsSubmitted] = useState<boolean>();
-    const [errorMessage, setErrorMessage] = useState<String>();
-    const navigate = useNavigate();
+    const {authToken} = useContext(AuthContext);
 
-    const signupNewUser = () => {
-        setIsSubmitted(true);
-        if(username && email && password && password === confirmPassword){
-            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then(() => {
-                navigate("/");
-            }).catch(() => setErrorMessage("Username already exists"));
-        }
+    const updateUserDetails = () => {
+        
     }
 
-    const onFileChange = (event: any) => {    
+    const onFileChange = (event: any) => {
         setUserImage(URL.createObjectURL(event.target.files[0]))
     };
+
+    useEffect(() => {
+        axios.post('http://localhost:8080/user/getProfile', {}, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
+            
+        });
+    }, [])
 
     return (
         <Card sx={{ minWidth: '100vh', height: '75vh', marginTop:'5vh' }}>
@@ -34,14 +34,11 @@ const Profile = () => {
                         <Box component="img" src={userImage} sx={{height: 125, width: 125}}/>
                         <input type="file" onChange={onFileChange}/>
                     </Box>
-                    <TextField error={!username && isSubmitted} onChange={(prop) => setUsername(prop.target.value)} id="Username" label="Username" variant="outlined" sx={{margin: 1, width: '50vh'}} />
-                    <TextField error={!email && isSubmitted} onChange={(prop) => setEmail(prop.target.value)} id="Email" label="Email" variant="outlined" sx={{margin: 1, width: '50vh'}} />
-                    <TextField error={!password && isSubmitted} onChange={(prop) => setPassword(prop.target.value)} id="Password" label="Password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
-                    <TextField error={!confirmPassword && isSubmitted} onChange={(prop) => setConfirmPassword(prop.target.value)} id="Confirm password" label="Confirm password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
-                    <Button onClick={signupNewUser} color="primary" variant="contained" sx={{marginRight: 20, marginLeft: 20, marginTop: 4}}>Sign up</Button>
-                    {errorMessage && <Typography color="red" variant="h6" gutterBottom  sx={{marginRight: 13, marginLeft: 13}}>
-                        {errorMessage}
-                    </Typography>}
+                    <Typography>{username}</Typography>
+                    <TextField error={!email && isSubmitted} onChange={(prop) => setEmail(prop.target.value)} helperText="email" value={email} id="Email" variant="outlined" sx={{margin: 1, width: '50vh'}} />
+                    <TextField error={!password && isSubmitted} onChange={(prop) => setPassword(prop.target.value)} helperText="password" value={password} id="Password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
+                    <TextField error={!confirmPassword && isSubmitted} onChange={(prop) => setConfirmPassword(prop.target.value)} helperText="confirm password" value={confirmPassword} id="Confirm password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
+                    <Button onClick={updateUserDetails} color="primary" variant="contained" sx={{marginRight: 20, marginLeft: 20, marginTop: 4}}>Update details</Button>
                 </Grid>
             </Grid>
         </Card>

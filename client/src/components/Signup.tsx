@@ -22,8 +22,12 @@ const Signup = () => {
         }
     }
 
-    const onFileChange = (event: any) => {    
-        setUserImage(URL.createObjectURL(event.target.files[0]))
+    const onFileChange = (event: any) => {   
+        const image =  event.target.files[0];
+        const formData = new FormData();
+        formData.append("file", image);
+        console.log(formData);
+        setUserImage(URL.createObjectURL(image))
     };
 
     return (
