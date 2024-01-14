@@ -7,6 +7,7 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -23,7 +24,7 @@ const Navbar = () => {
     const logout = () => {
       axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
             authorization: authToken.refreshToken
-        }}).then((_) => {
+        }}).then(() => {
           setCookie("accessToken", "", { path: "/" });
           setCookie("refreshToken", "", { path: "/"});
           setAuthToken({accessToken:"", refreshToken:""});
@@ -40,7 +41,7 @@ const Navbar = () => {
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
         <MenuItem onClick={handleClose}>Your Profile</MenuItem>
         <MenuItem onClick={handleClose}>Create a post</MenuItem>
-        <MenuItem onClick={logout}>Log out</MenuItem>
+        <MenuItem onClick={logout} href='/'>Log out</MenuItem>
       </Menu>
       <Typography className='title' variant="h4">
         Your Next Home

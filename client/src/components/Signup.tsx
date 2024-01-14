@@ -3,6 +3,8 @@ import { useContext, useState } from "react";
 import {AuthContext} from "../App";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import moment from "moment";
 
 const Signup = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
@@ -12,14 +14,12 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>();
     const [isSubmitted, setIsSubmitted] = useState<boolean>();
     const [errorMessage, setErrorMessage] = useState<String>();
-    const {setAuthToken} = useContext(AuthContext);
     const navigate = useNavigate();
 
     const signupNewUser = () => {
         setIsSubmitted(true);
         if(username && email && password && password === confirmPassword){
-            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then((res) => {
-                setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken});
+            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then(() => {
                 navigate("/");
             }).catch(() => setErrorMessage("Username already exists"));
         }
