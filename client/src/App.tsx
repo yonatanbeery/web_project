@@ -4,6 +4,7 @@ import './App.css'
 import PostsPage from './components/PostsPage';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Signup from './components/Signup';
+import Profile from './components/Profile';
 import axios from 'axios';
 import { useCookies } from "react-cookie";
 import moment from 'moment';
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: "/Signup",
     element: <Signup />,
+  },
+  {
+    path: "/Profile",
+    element: <Profile />,
   },
 ]);
 

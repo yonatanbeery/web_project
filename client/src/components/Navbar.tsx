@@ -1,4 +1,4 @@
-import { Box, IconButton,Toolbar, Typography } from '@mui/material';
+import { Box, IconButton,Link,Toolbar, Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
 import './styles/navbar.css'
@@ -7,7 +7,6 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../App';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -22,14 +21,13 @@ const Navbar = () => {
   };
 
     const logout = () => {
-      axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
+       axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
             authorization: authToken.refreshToken
-        }}).then(() => {
-          setCookie("accessToken", "", { path: "/" });
-          setCookie("refreshToken", "", { path: "/"});
-          setAuthToken({accessToken:"", refreshToken:""});
-        }); 
-      handleClose();
+        }});
+        setCookie("accessToken", "", { path: "/" });
+        setCookie("refreshToken", "", { path: "/"});
+        setAuthToken({accessToken:"", refreshToken:""});
+        handleClose();
     }
 
     return (
@@ -39,9 +37,16 @@ const Navbar = () => {
         <MenuIcon />
       </IconButton>
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem onClick={handleClose}>Your Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Create a post</MenuItem>
-        <MenuItem onClick={logout} href='/'>Log out</MenuItem>
+      <MenuItem>
+          <Link underline="none" color="black" href='/'>Find homes</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link underline="none" color="black" href='/Profile'>Your Profile</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+        <Link underline="none" color="black" href='/'>Create a post</Link>
+          </MenuItem>
+        <MenuItem onClick={logout}>Log out</MenuItem>
       </Menu>
       <Typography className='title' variant="h4">
         Your Next Home

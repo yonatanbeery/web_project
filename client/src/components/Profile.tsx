@@ -3,7 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
+const Profile = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
     const [username, setUsername] = useState<string>();
     const [email, setEmail] = useState<string>();
@@ -48,4 +48,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Profile;
