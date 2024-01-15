@@ -22,11 +22,9 @@ const Signup = () => {
             formData.append("email", email);
             formData.append("password", password);
             
-            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "multipart/form-data" }});
-/*
-            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then(() => {
+            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "multipart/form-data" }}).then(() => {
                 navigate("/");
-            }).catch(() => setErrorMessage("Username already exists"));*/
+            }).catch(() => setErrorMessage("Username already exists"));
         }
     }
 
