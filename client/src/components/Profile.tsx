@@ -7,8 +7,8 @@ const Profile = () => {
     const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
     const [username, setUsername] = useState<string>();
     const [email, setEmail] = useState<string>();
-    const [password, setPassword] = useState<string>();
-    const [confirmPassword, setConfirmPassword] = useState<string>();
+    const [password, setPassword] = useState<string>("####");
+    const [confirmPassword, setConfirmPassword] = useState<string>("####");
     const [isSubmitted, setIsSubmitted] = useState<boolean>();
     const {authToken} = useContext(AuthContext);
 
@@ -22,7 +22,8 @@ const Profile = () => {
 
     useEffect(() => {
         axios.post('http://localhost:8080/user/getProfile', {}, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
-            
+            setUsername(res.data.user.username);
+            setEmail(res.data.user.email);
         });
     }, [])
 
@@ -34,7 +35,7 @@ const Profile = () => {
                         <Box component="img" src={userImage} sx={{height: 125, width: 125}}/>
                         <input type="file" onChange={onFileChange}/>
                     </Box>
-                    <Typography>{username}</Typography>
+                    <Typography variant="h5" sx={{margin:1}}>{username}</Typography>
                     <TextField error={!email && isSubmitted} onChange={(prop) => setEmail(prop.target.value)} helperText="email" value={email} id="Email" variant="outlined" sx={{margin: 1, width: '50vh'}} />
                     <TextField error={!password && isSubmitted} onChange={(prop) => setPassword(prop.target.value)} helperText="password" value={password} id="Password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
                     <TextField error={!confirmPassword && isSubmitted} onChange={(prop) => setConfirmPassword(prop.target.value)} helperText="confirm password" value={confirmPassword} id="Confirm password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
