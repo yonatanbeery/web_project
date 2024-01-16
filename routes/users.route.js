@@ -5,6 +5,8 @@ const authenticate = require('../middlewares/authenticate.middlewate')
 
 router.put("/updateProfile",authenticate, Users.updateUserSettings);
 
-router.post("/getProfile",authenticate, Users.getUserSettings);
+router.post("/getUserSettings",authenticate, Users.getUserSettings);
+
+router.post("/getUserImage",authenticate, Users.getUserImage);
 
 module.exports = router;

@@ -4,7 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../App";
 
 const Profile = () => {
-    const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
+    const [userImage, setUserImage] = useState<any>();
     const [username, setUsername] = useState<string>();
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>("####");
@@ -16,12 +16,26 @@ const Profile = () => {
         
     }
 
-    const onFileChange = (event: any) => {
-        setUserImage(URL.createObjectURL(event.target.files[0]))
+    const onFileChange = (event: any) => {        
+        setUserImage(event.target.files[0]);
     };
 
+    const setImage = async () => {
+        const imageUrl = "https://i.imgur.com/fHyEMsl.jpg";
+        const res = await fetch(imageUrl);
+        console.log('jpg', res);
+        const imageBlob = await res.blob();
+        setUserImage(imageBlob);
+
+        axios.post('http://localhost:8080/user/getUserImage', {}, {headers:{"Authorization": authToken.accessToken}}).then(async (res) => {
+            console.log('png', res);
+            const imageBlob = await res.blob();
+            setUserImage(imageBlob)});
+    }
+
     useEffect(() => {
-        axios.post('http://localhost:8080/user/getProfile', {}, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
+        setImage();
+        axios.post('http://localhost:8080/user/getUserSettings', {}, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
             setUsername(res.data.user.username);
             setEmail(res.data.user.email);
         });
@@ -32,10 +46,10 @@ const Profile = () => {
             <Grid container spacing={1}>
                 <Grid md={12} sx={{marginTop: 5, justifyContent:'center', alignItems: 'center', display:'flex', flexDirection:'column'}}>
                     <Box>
-                        <Box component="img" src={userImage} sx={{height: 125, width: 125}}/>
+                        <Box component="img" src={userImage ? URL.createObjectURL(userImage) : "../../public/defaultUserImage.png"} sx={{height: 125, width: 125}}/>
                         <input type="file" onChange={onFileChange}/>
                     </Box>
-                    <Typography variant="h5" sx={{margin:1}}>{username}</Typography>
+                    <Typography variant="h5" sx={{margin:1}}>User name: {username}</Typography>
                     <TextField error={!email && isSubmitted} onChange={(prop) => setEmail(prop.target.value)} helperText="email" value={email} id="Email" variant="outlined" sx={{margin: 1, width: '50vh'}} />
                     <TextField error={!password && isSubmitted} onChange={(prop) => setPassword(prop.target.value)} helperText="password" value={password} id="Password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />
                     <TextField error={!confirmPassword && isSubmitted} onChange={(prop) => setConfirmPassword(prop.target.value)} helperText="confirm password" value={confirmPassword} id="Confirm password" variant="outlined" type="password" sx={{margin: 1, width: '50vh'}} />

@@ -15,22 +15,23 @@ const Signup = () => {
 
     const signupNewUser = () => {
         setIsSubmitted(true);
-        if(username && email && password && password === confirmPassword){
+        if(!userImage) setErrorMessage("You must enter a profile picture");
+        else if(username && email && password && password === confirmPassword){
             const formData = new FormData();
             formData.append("file", userImage);
             formData.append("username", username);
             formData.append("email", email);
             formData.append("password", password);
             
-            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "multipart/form-data" }}).then(() => {
+            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "image/form-data" }}).then(() => {
                 navigate("/");
             }).catch(() => setErrorMessage("Username already exists"));
         }
     }
 
     const onFileChange = (event: any) => {   
+        console.log(event.target.files[0]);
         setUserImage(event.target.files[0]);
-        //URL.createObjectURL(userImage)
     };
 
     return (

@@ -62,7 +62,7 @@ const signup = async (req, res) => {
             } else {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
-                fs.rename(req.files[0].path, './photos/users/' + username, () => console.log('Image saved'));
+                fs.rename(req.files[0].path, './photos/users/' + username  + '.png', () => console.log('Image saved'));
                 const {accessToken, refreshToken} = generateTokens(user);
                 return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }
