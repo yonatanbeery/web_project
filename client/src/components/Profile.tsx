@@ -21,16 +21,15 @@ const Profile = () => {
     };
 
     const setImage = async () => {
-        const imageUrl = "https://i.imgur.com/fHyEMsl.jpg";
-        const res = await fetch(imageUrl);
-        console.log('jpg', res);
-        const imageBlob = await res.blob();
-        setUserImage(imageBlob);
-
-        axios.post('http://localhost:8080/user/getUserImage', {}, {headers:{"Authorization": authToken.accessToken}}).then(async (res) => {
-            console.log('png', res);
-            const imageBlob = await res.blob();
-            setUserImage(imageBlob)});
+        const response = await fetch('http://localhost:8080/user/getUserImage', {
+            method: "POST",
+            headers: {
+              "Content-Type": "image/png",
+              "Authorization": authToken.accessToken
+            }
+          });
+          const imageBlob = await response.blob();
+          setUserImage(imageBlob);
     }
 
     useEffect(() => {
