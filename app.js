@@ -21,7 +21,7 @@ const initApp = () => {
       app.use(bodyParser.urlencoded({ extended: true }));
 
       app.use("/properties", PropertiesRouter);
-      app.use("/users", UsersRouter);
+      app.use("/user", UsersRouter);
       app.use("/auth", AuthRouter);
       resolve(app);
     });

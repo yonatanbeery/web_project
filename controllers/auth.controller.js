@@ -49,8 +49,9 @@ const refreshToken = async (req, res) => {
 
 const signup = async (req, res) => {
     console.log("signup");
+    console.log(req.files[0]);
     try {
-        const {userImage ,username, email, password} = req.body.data;
+        const {username, email, password} = req.body;
         if (!(username && email && password)) {
             console.log("invalid user details");
             throw new Error("invalid user details");
@@ -61,14 +62,9 @@ const signup = async (req, res) => {
             } else {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
-                userImage && fs.writeFile('./photos/users/' + username + '.jpeg', userImage, (error) => {
-                    if (error) {
-                     throw error;
-                   }
-                    console.log("Image saved.");
-                   });
-                   const {accessToken, refreshToken} = generateTokens(user);
-                   return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
+                fs.rename(req.files[0].path, './photos/users/' + username  + '.png', () => console.log('Image saved'));
+                const {accessToken, refreshToken} = generateTokens(user);
+                return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }
         }
     } catch (err) {

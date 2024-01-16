@@ -5,13 +5,13 @@ const {OAuth2Client} = require('google-auth-library');
 const authenticate = async (req, res, next) => {
     let errors = 0;
     const authHeaders = req.headers['authorization'];
-    console.log(authHeaders);
     if(!authHeaders) return res.status(401).send();
 
     jwt.verify(authHeaders, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if(err) errors++;
         if(user) {
-            req.user = user;
+            req.userId = user._id;
+            console.log('request by ' + req.userId);
             next()
         }
     });
@@ -22,7 +22,11 @@ const authenticate = async (req, res, next) => {
             axios.get('https://oauth2.googleapis.com/tokeninfo', {params:{
                 access_token:authHeaders
             }}).then((res) => {
-                if(res.status == 200) next();
+                if(res.status == 200) {
+                    req.userId = res.data.email
+                    console.log('request by ' + req.userId);
+                    next()
+                }
                 else errors++;
             });
         } catch {

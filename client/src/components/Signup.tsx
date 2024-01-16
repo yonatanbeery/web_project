@@ -1,13 +1,10 @@
 import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
-import { useContext, useState } from "react";
-import {AuthContext} from "../App";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
-import moment from "moment";
 
 const Signup = () => {
-    const [userImage, setUserImage] = useState<string>("../../public/defaultUserImage.png");
+    const [userImage, setUserImage] = useState<any>();
     const [username, setUsername] = useState<string>();
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
@@ -18,15 +15,23 @@ const Signup = () => {
 
     const signupNewUser = () => {
         setIsSubmitted(true);
-        if(username && email && password && password === confirmPassword){
-            axios.post('http://localhost:8080/auth/signup', {data:{userImage, username, email, password}}).then(() => {
+        if(!userImage) setErrorMessage("You must enter a profile picture");
+        else if(username && email && password && password === confirmPassword){
+            const formData = new FormData();
+            formData.append("file", userImage);
+            formData.append("username", username);
+            formData.append("email", email);
+            formData.append("password", password);
+            
+            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "image/form-data" }}).then(() => {
                 navigate("/");
             }).catch(() => setErrorMessage("Username already exists"));
         }
     }
 
-    const onFileChange = (event: any) => {    
-        setUserImage(URL.createObjectURL(event.target.files[0]))
+    const onFileChange = (event: any) => {   
+        console.log(event.target.files[0]);
+        setUserImage(event.target.files[0]);
     };
 
     return (
@@ -34,7 +39,7 @@ const Signup = () => {
             <Grid container spacing={1}>
                 <Grid md={12} sx={{marginTop: 5, justifyContent:'center', alignItems: 'center', display:'flex', flexDirection:'column'}}>
                     <Box>
-                        <Box component="img" src={userImage} sx={{height: 125, width: 125}}/>
+                        <Box component="img" src={userImage ? URL.createObjectURL(userImage) : "../../public/defaultUserImage.png"} sx={{height: 125, width: 125}}/>
                         <input type="file" onChange={onFileChange}/>
                     </Box>
                     <TextField error={!username && isSubmitted} onChange={(prop) => setUsername(prop.target.value)} id="Username" label="Username" variant="outlined" sx={{margin: 1, width: '50vh'}} />
