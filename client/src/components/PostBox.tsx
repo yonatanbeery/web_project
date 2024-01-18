@@ -30,7 +30,7 @@ const PostBox = (props: PostProps) => {
                 <Typography variant="body2" color="text.secondary">
                     {homeType} in {location}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" noWrap>
                     Comments: {comments?.length ? comments.join(', ') : "No comments yet"}
                 </Typography>
             </CardContent>

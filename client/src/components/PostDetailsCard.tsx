@@ -1,19 +1,24 @@
 import { Post } from "./types/postTypes";
 import Dialog from '@mui/material/Dialog';
-import { Button, Grid, IconButton, Popover, TextField, Typography } from "@mui/material";
+import { Button, IconButton, Popover, TextField, Typography } from "@mui/material";
 import PostDetail from "./PostDetail";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
+import { postComment } from "../services/postsService";
 
 interface PostDetailsCardProps {
     openPost: Post;
     setOpenPost: (post: Post | null) => void;
+    onCommentAdded: (newComment: string) => void;
 }
 
 const PostDetailsCard = (props: PostDetailsCardProps) => {
-    const { openPost, setOpenPost } = props;
-    const { photos, location, dealType, price, bedrooms, bathrooms, homeType, area, comments, contactDetails, freeText } = openPost;
+    const { openPost, setOpenPost, onCommentAdded } = props;
+    const { _id, photos, location, dealType, price, bedrooms, bathrooms, homeType, area, comments, contactDetails, freeText } = openPost;
+    const [ currentComments, setCurrentComments ] = useState(comments);
+    const [ newComment, setNewComment ] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const commentRef = useRef<HTMLInputElement | null>(null);
     const openContactDetails = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -21,6 +26,15 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handlePostComment = async () => {
+        if (!newComment.trim()) return;
+        await postComment(_id, newComment)
+        if (commentRef.current) commentRef.current.value = '';
+        setCurrentComments(prevComments => prevComments  ? [...prevComments, newComment] : [newComment]);
+        setNewComment('');
+        onCommentAdded(newComment);
+    } 
 
     return (
         <div>
@@ -85,8 +99,8 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
                                 comments:
                             </Typography>
                             <div style={{overflow: "auto", height: "120px"}}>
-                                {comments?.length
-                                    ? comments?.map(comment => 
+                                {currentComments?.length
+                                    ? currentComments?.map(comment => 
                                         <>
                                             <Typography variant="subtitle1" sx={{margin: "0"}}>
                                                 {comment}
@@ -100,8 +114,8 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
                             </div>
                         </>
                         <div style={{display: "flex"}}>
-                        <TextField variant="standard" sx={{margin: "auto", display: "block"}} label="Add your comment here"/>
-                        <IconButton>
+                        <TextField inputRef={commentRef} variant="standard" sx={{margin: "auto", display: "block"}} label="Add your comment here" onChange={(event: React.ChangeEvent<HTMLInputElement>) => setNewComment(event.target.value)} />
+                        <IconButton onClick={handlePostComment}>
                             <SendIcon />
                         </IconButton>
                         </div>
