@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const Users = require("../controllers/users.controller");
+const authenticate = require('../middlewares/authenticate.middlewate')
 
-router.post("/login", Users.login);
+router.put("/updateProfile",authenticate, Users.updateUserSettings);
 
-router.post("/signup", Users.signup);
+router.post("/getUserSettings",authenticate, Users.getUserSettings);
 
-router.put("/:id", Users.updateUserSettings);
-
-router.get("/:id", Users.getUserSettings);
+router.post("/getUserImage",authenticate, Users.getUserImage);
 
 module.exports = router;

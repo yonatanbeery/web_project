@@ -1,53 +1,27 @@
 const fs = require("fs");
+const {resolve} = require('path');
 const User = require("../models/users.model");
-
-const login = async (req, res) => {
-    console.log("login request");
-    try {
-        const {username, password} = req.body.data;
-        const user = await User.findOne({username, password});
-        user ? res.status(200).send({"authToken": "token"}) : res.status(403).send()
-    } catch (err) {
-        res.status(403).json({ message: err.message });
-    }
-};
-
-const signup = async (req, res) => {
-    console.log("signup");
-    try {
-        const {userImage ,username, email, password} = req.body.data;
-        const user = await User.insertMany({username, email, password});
-        console.log(user);
-        console.log(userImage);
-        fs.writeFile('./photos/users/' + username + '.jpeg', userImage, (error) => {
-            if (error) {
-             throw error;
-           }
-            console.log("Image saved.");
-           });
-        user ? res.status(200).send({"authToken": "token"}) : res.status(403).send()
-    } catch (err) {
-        res.status(403).json({ message: err.message });
-    }
-};
 
 const updateUserSettings = (req, res) => {
     
 };
 
-const getUserSettings = (req, res) => {
-    
+const getUserSettings = async (req, res) => {
+    console.log("get user " + req.userId + " details");
+    const user = await User.findById(req.userId);
+    if(!user) return res.status(400).send("user not found");
+    return res.status(200).send({user});
 };
 
-const verifyUser = (req, res) => {
-    console.log(req.headers.authorization);
-    return !!req.headers.authorization;
+const getUserImage = async (req, res) => {
+    console.log("get user " + req.userId + " image");
+    const user = await User.findById(req.userId);
+    if(!user) return res.status(400).send("user not found");
+    return res.status(200).sendFile(resolve('./photos/users/' + user.username + '.png'));
 };
 
 module.exports = {
-    login,
-    signup,
     updateUserSettings,
     getUserSettings,
-    verifyUser
+    getUserImage
 };

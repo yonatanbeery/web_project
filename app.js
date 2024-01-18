@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const PropertiesRouter = require("./routes/property.route");
 const UsersRouter = require("./routes/users.route");
+const AuthRouter = require("./routes/auth.route");
 const cors = require('cors')
 
 const initApp = () => {
@@ -20,7 +21,8 @@ const initApp = () => {
       app.use(bodyParser.urlencoded({ extended: true }));
 
       app.use("/properties", PropertiesRouter);
-      app.use("/users", UsersRouter);
+      app.use("/user", UsersRouter);
+      app.use("/auth", AuthRouter);
       resolve(app);
     });
   });
