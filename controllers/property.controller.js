@@ -41,9 +41,43 @@ const deletePropertyById = (req, res) => {
     res.send("delete property by id: " + req.params.id);
 };
 
+const postPropertyComment = async (req, res) => {
+    
+    const { id } = req.body;
+
+    try {
+        const property = await Property.findById(id);
+
+        if (!property) {
+            return res.status(404).send("Property not found");
+        }
+
+        const { comment } = req.body; 
+
+        if (!comment || comment.trim() === "") {
+            return res.status(400).send("Comment cannot be empty");
+        }
+
+        property.comments.push(comment);
+        await property.save();
+
+        res.status(200).send("Comment added successfully");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Failed to add comment");
+    }
+}
+
+const getPropertyById = async (req, res) => {
+    const property = await Property.findById(req.params.id);
+    res.send(property);
+}
+
 module.exports = {
     getAllProperties,
     postProperty,
     putPropertyById,
-    deletePropertyById
+    deletePropertyById,
+    postPropertyComment,
+    getPropertyById,
 };

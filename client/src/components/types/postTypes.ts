@@ -7,6 +7,7 @@ interface ContactDetails {
 }
 
 export interface Post {
+    _id: string;
     photos: any[];
     location: string;
     dealType: DealTypeOption;

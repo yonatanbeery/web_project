@@ -12,7 +12,7 @@ import PostDetailsCard from "./PostDetailsCard";
 
 const PostsPage = (filtersProp: FiltersOptions) => {
     const {authToken} = useContext(AuthContext);
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState<Post []>([]);
     const [openPost, setOpenPost] = useState<Post | null>();
     const [filters, setFilters] = useState<FiltersOptions>({
         location: filtersProp.location,
@@ -23,7 +23,11 @@ const PostsPage = (filtersProp: FiltersOptions) => {
         homeType: filtersProp.homeType
     });
     
-    useEffect(() => {fetchPosts();}, []);
+    const onCommentAdded = async (newComment: string) => {
+        openPost && setPosts((prevPosts: Post[]) => prevPosts?.map((post) => (post._id === openPost._id ? {...openPost, comments: openPost.comments?.concat([newComment])} : post)) || []);
+    }
+
+    useEffect(() => {fetchPosts();}, []);;  
 
     const fetchPosts = async () => {
         try {
@@ -33,6 +37,7 @@ const PostsPage = (filtersProp: FiltersOptions) => {
             console.error('Error fetching data:', error);
         }
     };
+
     return (
         authToken.accessToken
             ? <>
@@ -48,7 +53,7 @@ const PostsPage = (filtersProp: FiltersOptions) => {
                 </div>
                 {openPost && 
                     <>
-                        <PostDetailsCard {...{openPost, setOpenPost}} />
+                        <PostDetailsCard {...{openPost, setOpenPost, onCommentAdded}} />
                     </>
                 }
             </>
