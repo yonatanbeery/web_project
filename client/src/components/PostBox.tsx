@@ -1,25 +1,29 @@
 import { Post } from "./types/postTypes";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import './styles/postsPage.css'
 
 interface PostProps {
     post: Post;
     setOpenPost: (post: Post) => void;
+    photo: {title: string, src: string};
 }
 
 const PostBox = (props: PostProps) => {
-    const { post, setOpenPost } = props;
+    const { post, setOpenPost, photo } = props;
     const { location, dealType, price, bedrooms, bathrooms, homeType, area, comments } = post;
 
     return (
-        <Card className='postBox' onClick={() =>setOpenPost(post)}>
-            <CardMedia 
-                className='boxPhoto'
-                image="/static/images/cards/contemplative-reptile.jpg"
-            />
+        <Card className='postBox' onClick={() =>setOpenPost(post)} style={{ justifyContent: "space-between"}}> 
+
+            <div style={{height: "150px", display: 'flex', justifyContent: "center", alignItems: 'center'}}>
+                {photo
+                    ? <img key={photo.title} src={photo.src} alt={photo.title} style={{display: 'flex', width: '100%', height: '100%', justifyContent: "space-between"}}/>
+                    : <Typography variant="h5" color="text.secondary">
+                        No photos for this post
+                    </Typography>}
+            </div>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} $

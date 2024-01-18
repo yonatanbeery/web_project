@@ -1,4 +1,27 @@
 const Property = require("../models/property.model");
+const path = require('path');
+const fs = require('fs').promises;
+
+const getPropertyPhotos = async (id) => {
+    console.log("get properties images");
+
+    try {
+        const photosPath = path.resolve('./photos/posts/' + id);
+        const photoFiles = await fs.readdir(photosPath);
+
+
+        const photoDataArray = await Promise.all(photoFiles.map(async fileName => {
+            const filePath = path.join(photosPath, fileName);
+            const fileData = await fs.readFile(filePath);
+            return { fileName, fileData };
+        }));
+
+        return photoDataArray 
+    } catch (error) {
+        console.error(`Error reading photos for property ${id}:`, error);
+        return [] 
+    }
+}
 
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
@@ -15,7 +38,13 @@ const getAllProperties = async (req, res) => {
 
     try {
         let properties = req.query ? await Property.find(query) : await Property.find();
-        res.send(properties);
+        
+        const newProperties = await Promise.all(properties.map(async (property) => {
+            const photos = await getPropertyPhotos(property.id);
+            return { ...property.toObject(), photos };
+        }));
+
+        res.send(newProperties);
     } catch (err) { 
         res.status(500).json({ message: err.message });
     }
@@ -80,4 +109,5 @@ module.exports = {
     deletePropertyById,
     postPropertyComment,
     getPropertyById,
+    getPropertyPhotos
 };
