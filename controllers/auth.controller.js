@@ -49,7 +49,6 @@ const refreshToken = async (req, res) => {
 
 const signup = async (req, res) => {
     console.log("signup");
-    console.log(req.files[0]);
     try {
         const {username, email, password} = req.body;
         if (!(username && email && password)) {

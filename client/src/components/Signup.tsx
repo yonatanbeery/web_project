@@ -16,6 +16,8 @@ const Signup = () => {
     const signupNewUser = () => {
         setIsSubmitted(true);
         if(!userImage) setErrorMessage("You must enter a profile picture");
+        else if(password !== confirmPassword) setErrorMessage("passwords must match");
+        else if(userImage.name.slice(-4) !== ".png") setErrorMessage("photos must be in png format");
         else if(username && email && password && password === confirmPassword){
             const formData = new FormData();
             formData.append("file", userImage);
@@ -24,13 +26,13 @@ const Signup = () => {
             formData.append("password", password);
             
             axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "image/form-data" }}).then(() => {
+                setErrorMessage("");
                 navigate("/");
             }).catch(() => setErrorMessage("Username already exists"));
         }
     }
 
     const onFileChange = (event: any) => {   
-        console.log(event.target.files[0]);
         setUserImage(event.target.files[0]);
     };
 
