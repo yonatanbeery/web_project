@@ -2,9 +2,11 @@ import { Post } from "./types/postTypes";
 import Dialog from '@mui/material/Dialog';
 import { Button, IconButton, Popover, TextField, Typography } from "@mui/material";
 import PostDetail from "./PostDetail";
-import { MouseEvent, useRef, useState } from "react";
+import { MouseEvent, useRef, useState, useEffect, useContext } from "react";
 import SendIcon from '@mui/icons-material/Send';
-import { postComment } from "../services/postsService";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { AuthContext } from "../App";
 
 interface PostDetailsCardProps {
     openPost: Post;
@@ -19,6 +21,8 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
     const [ newComment, setNewComment ] = useState('');
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const commentRef = useRef<HTMLInputElement | null>(null);
+    const {authToken} = useContext(AuthContext);
+    const [ currentPhotoIndex, setCurrentPhotoIndex ] = useState(0);
     const openContactDetails = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -29,25 +33,47 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
 
     const handlePostComment = async () => {
         if (!newComment.trim()) return;
-        await postComment(_id, newComment)
+        await postComment(_id, newComment, authToken.accessToken)
         if (commentRef.current) commentRef.current.value = '';
         setCurrentComments(prevComments => prevComments  ? [...prevComments, newComment] : [newComment]);
         setNewComment('');
         onCommentAdded(newComment);
     } 
 
+    useEffect(() => {
+        if (photos && photos.length) {
+            setCurrentPhotoIndex(0);
+        }
+    }, []);
+
+    const nextPhoto = () => {
+        setCurrentPhotoIndex(currentPhotoIndex === photos.length - 1 ? 0 : currentPhotoIndex + 1)
+    }
+
+    const previousPhoto = () => {
+        setCurrentPhotoIndex(currentPhotoIndex === 0 ? photos.length - 1 : currentPhotoIndex - 1)
+    }
+
     return (
         <div>
             <Dialog onClose={() => setOpenPost(null)} open fullWidth maxWidth="md" sx={{ '& .MuiPaper-root': { borderRadius: '20px', padding: '20px'  } }}>
                 <div style={{height: "400px"}}>
                     {photos?.length
-                        ? <img src={photos[0]}/>
+                        ?   <div style={{display: 'flex', width: '100%', height: '100%', justifyContent: "space-between"}}>
+                                <IconButton onClick={previousPhoto}>
+                                    <ArrowBackIosIcon />
+                                </IconButton>
+                                <img key={photos[currentPhotoIndex].title} src={photos[currentPhotoIndex].src} alt={photos[currentPhotoIndex].title} />
+                                <IconButton onClick={nextPhoto}>
+                                    <ArrowForwardIosIcon />
+                                </IconButton>
+                            </div>
                         :   <Typography variant="h4" color="text.secondary" sx={{textAlign: "center", marginTop: "180px"}}>
                                 No photos for this post
                             </Typography>
                     }
                 </div>
-                <div style={{display: "flex", height: "250px"}}>
+                <div style={{display: "flex", height: "250px", marginTop: '12px'}}>
                     <div style={{width: "70%"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <PostDetail 
