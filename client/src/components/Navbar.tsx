@@ -40,9 +40,9 @@ const Navbar = () => {
       <MenuItem>
           <Link underline="none" color="black" href='/'>Find homes</Link>
         </MenuItem>
-        <MenuItem>
+        {cookies.refreshToken && <MenuItem>
           <Link underline="none" color="black" href='/Profile'>Your Profile</Link>
-        </MenuItem>
+        </MenuItem>}
         <MenuItem onClick={handleClose}>
         <Link underline="none" color="black" href='/'>Create a post</Link>
           </MenuItem>
