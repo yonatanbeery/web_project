@@ -7,6 +7,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { AuthContext } from "../App";
+import { postComment } from "../services/postsService";
 
 interface PostDetailsCardProps {
     openPost: Post;
@@ -60,11 +61,11 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
                 <div style={{height: "400px"}}>
                     {photos?.length
                         ?   <div style={{display: 'flex', width: '100%', height: '100%', justifyContent: "space-between"}}>
-                                <IconButton onClick={previousPhoto}>
+                                <IconButton onClick={previousPhoto} sx={photos.length <= 1 ? {visibility: "hidden"} : {}}>
                                     <ArrowBackIosIcon />
                                 </IconButton>
                                 <img key={photos[currentPhotoIndex].title} src={photos[currentPhotoIndex].src} alt={photos[currentPhotoIndex].title} />
-                                <IconButton onClick={nextPhoto}>
+                                <IconButton onClick={nextPhoto} sx={photos.length <= 1 ? {visibility: "hidden"} : {}}>
                                     <ArrowForwardIosIcon />
                                 </IconButton>
                             </div>

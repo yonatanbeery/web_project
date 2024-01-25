@@ -28,7 +28,11 @@ const PostsPage = (filtersProp: FiltersOptions) => {
         openPost && setPosts((prevPosts: Post[]) => prevPosts?.map((post) => (post._id === openPost._id ? {...openPost, comments: openPost.comments?.concat([newComment])} : post)) || []);
     }
 
-    useEffect(() => {fetchPosts();}, []);;  
+    useEffect(() => {
+        if (authToken) {
+            fetchPosts();
+        }
+    }, [authToken]);  
 
     const fetchPosts = async () => {
         try {
@@ -54,7 +58,7 @@ const PostsPage = (filtersProp: FiltersOptions) => {
             ? <>
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>
-                    {posts.length
+                    {posts && posts.length
                         ? posts.map((post: Post) => <PostBox  {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null}} />) 
                         : <Typography className="noResults" variant="h4" color="text.secondary">
                             We couldn't find a property that matches your search... <br />
