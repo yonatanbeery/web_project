@@ -7,6 +7,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { AuthContext } from "../App";
+import { postComment } from "../services/postsService";
 
 interface PostDetailsCardProps {
     openPost: Post;
