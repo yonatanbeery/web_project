@@ -6,7 +6,6 @@ import {AuthContext} from "../App";
 import axios from 'axios';
 import { useCookies } from "react-cookie";
 import moment from "moment";
-import Navbar from "./Navbar";
 
 const Login = () => {
     const [cookies, setCookie] = useCookies(["accessToken", "refreshToken", "userId"]);
@@ -16,19 +15,25 @@ const Login = () => {
     const {setAuthToken} = useContext(AuthContext);
 
     const loginWithGoogle = useGoogleLogin({
-        onSuccess: (tokenResponse: TokenResponse) => {
-            setCookie("accessToken", tokenResponse.access_token, { path: "/" , expires: moment().add(1, 'h').toDate()});
-            setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""})}, //TODO: user id with google
-        onError: () => console.log("error")
+        onSuccess: async (tokenResponse: TokenResponse) => {
+            console.log({token:tokenResponse})
+            await axios.post('http://localhost:8080/auth/googleLogin', {data:tokenResponse}).then((res) => {
+                setAuthData(res.data.accessToken, res.data.refreshToken, res.data.userId)
+            }).catch(() => setErrorMessage("Cant sign in with google"))},
+        onError: () => setErrorMessage("Cant sign in with google")
     });
 
     const loginWithUsername = async () => {
-        const g = await axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
-            setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
-            setCookie("refreshToken", res.data.refreshToken, { path: "/" });
-            setCookie("userId", res.data.userId, { path: "/" });
-            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken, userId: res.data.userId} );
+        await axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
+            setAuthData(res.data.accessToken, res.data.refreshToken, res.data.userId)
         }).catch(() => setErrorMessage("Incorrect username or password"));
+    }
+
+    const setAuthData = (accessToken:string, refreshToken:string, userId:string) => {
+        setCookie("accessToken", accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
+        setCookie("refreshToken", refreshToken, { path: "/" });
+        setCookie("userId", userId, { path: "/" });
+        setAuthToken({accessToken: accessToken, refreshToken: refreshToken, userId: userId} );
     }
 
     return (
