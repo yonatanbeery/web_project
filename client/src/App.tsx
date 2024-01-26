@@ -8,11 +8,14 @@ import Profile from './components/Profile';
 import axios from 'axios';
 import { useCookies } from "react-cookie";
 import moment from 'moment';
+import PostEditor from './components/NewPost/NewPostCard';
+import { getCities } from './services/citiesService';
 
-export type authTokenType = {accessToken:string, refreshToken:string}
+export type authTokenType = {accessToken:string, refreshToken:string, userId: string}
 
 export const AuthContext = createContext<{authToken: authTokenType, setAuthToken: any}>(
-  {authToken: {accessToken:"", refreshToken:""}, setAuthToken: null});
+  {authToken: {accessToken:"", refreshToken:"", userId: ""}, setAuthToken: null});
+export const CitiesContext = createContext<{cities: string[]}>({cities: []});
 
 const router = createBrowserRouter([
   {
@@ -27,12 +30,16 @@ const router = createBrowserRouter([
     path: "/Profile",
     element: <Profile />,
   },
+  {
+    path: "/NewPost",
+    element: <PostEditor />,
+  },
 ]);
 
 function App() {
-  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
-  const [authToken, setAuthToken] = useState<authTokenType>({accessToken:cookies.accessToken, refreshToken:cookies.refreshToken});
-
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken", "userId"]);
+  const [authToken, setAuthToken] = useState<authTokenType>({accessToken:cookies.accessToken, userId: cookies.userId, refreshToken:cookies.refreshToken});
+  const [cities, setCities] = useState([]);
 
   useEffect(() => {
     if(authToken.accessToken && authToken.refreshToken) {
@@ -43,17 +50,30 @@ function App() {
             console.log("refreshed", res.data);
             setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
             setCookie("refreshToken", res.data.refreshToken, { path: "/"});
-            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
+            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken, userId:res.data.userId} );
         }); 
       }, 3600 * 1000 - 10000);
     }
   }, [authToken])
 
+  useEffect(() => {fetchCities()}, []);
+
+  const fetchCities = async () => {
+    try {
+        const response = await getCities();
+        response && setCities((response.data.result.records.map((location: { [x: string]: any; }) => location['שם_ישוב_לועזי']))); 
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};
+
   return (
     <div>
       <AuthContext.Provider value={{authToken, setAuthToken}}>
-        <Navbar /> 
-        <RouterProvider router={router} />
+        <CitiesContext.Provider value={{cities}}>
+          <Navbar /> 
+          <RouterProvider router={router} />
+        </CitiesContext.Provider>
       </AuthContext.Provider>
     </div>
   )

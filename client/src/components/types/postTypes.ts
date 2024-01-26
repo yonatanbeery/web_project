@@ -1,13 +1,13 @@
 import { DealTypeOption, HomeTypeOption } from "../filters/filtersTypes";
 
-interface ContactDetails {
+export interface ContactDetails {
     name: string;
     phoneNumber: string;
     EmailAddress: string;
 }
 
 export interface Post {
-    _id: string;
+    _id?: string;
     photos: any[];
     location: string;
     dealType: DealTypeOption;
@@ -18,5 +18,6 @@ export interface Post {
     area: number;
     contactDetails?: ContactDetails;
     comments?: string[];
-    freeText?: string
+    freeText?: string;
+    creator?: string;
 }

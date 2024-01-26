@@ -14,7 +14,7 @@ const login = async (req, res) => {
         
             else user.tokens.push(refreshToken);
             await user.save();
-            user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken}) : res.status(403).send()
+            user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": user._id}) : res.status(403).send()
         } else throw new Error("unauthorized");
     } catch (err) {
         res.status(403).json({ message: err.message });

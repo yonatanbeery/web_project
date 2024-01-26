@@ -9,7 +9,7 @@ import moment from "moment";
 import Navbar from "./Navbar";
 
 const Login = () => {
-    const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
+    const [cookies, setCookie] = useCookies(["accessToken", "refreshToken", "userId"]);
     const [username, setUsername] = useState<String>();
     const [password, setPassword] = useState<String>();
     const [errorMessage, setErrorMessage] = useState<String>();
@@ -18,15 +18,16 @@ const Login = () => {
     const loginWithGoogle = useGoogleLogin({
         onSuccess: (tokenResponse: TokenResponse) => {
             setCookie("accessToken", tokenResponse.access_token, { path: "/" , expires: moment().add(1, 'h').toDate()});
-            setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""})},
+            setAuthToken({accessToken: tokenResponse.access_token, refreshToken:""})}, //TODO: user id with google
         onError: () => console.log("error")
     });
 
-    const loginWithUsername = () => {
-        axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
+    const loginWithUsername = async () => {
+        const g = await axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
             setCookie("accessToken", res.data.accessToken, { path: "/" , expires: moment().add(1, 'h').toDate()});
             setCookie("refreshToken", res.data.refreshToken, { path: "/" });
-            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken} );
+            setCookie("userId", res.data.userId, { path: "/" });
+            setAuthToken({accessToken: res.data.accessToken, refreshToken:res.data.refreshToken, userId: res.data.userId} );
         }).catch(() => setErrorMessage("Incorrect username or password"));
     }
 

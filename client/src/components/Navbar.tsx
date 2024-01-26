@@ -11,7 +11,7 @@ import { useCookies } from 'react-cookie';
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {authToken, setAuthToken} = useContext(AuthContext);
-  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken"]);
+  const [cookies, setCookie] = useCookies(["accessToken", "refreshToken", "userId"]);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -26,7 +26,8 @@ const Navbar = () => {
         }});
         setCookie("accessToken", "", { path: "/" });
         setCookie("refreshToken", "", { path: "/"});
-        setAuthToken({accessToken:"", refreshToken:""});
+        setCookie("userId", "", { path: "/"});
+        setAuthToken({accessToken:"", refreshToken:"", userId: ""});
         handleClose();
     }
 
@@ -44,7 +45,7 @@ const Navbar = () => {
           <Link underline="none" color="black" href='/Profile'>Your Profile</Link>
         </MenuItem>}
         <MenuItem onClick={handleClose}>
-        <Link underline="none" color="black" href='/'>Create a post</Link>
+        <Link underline="none" color="black" href='/NewPost'>Create a post</Link>
           </MenuItem>
         <MenuItem onClick={logout}>
         <Link underline="none" color="black" href='/'>Log out</Link>
