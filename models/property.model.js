@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const DealType = mongoose.Schema.Types.String;
 DealType.enumValues = ['rent', 'sale'];
-const PropertyType = mongoose.Schema.Types.String;
-PropertyType.enumValues = [
+const HomeType = mongoose.Schema.Types.String;
+HomeType.enumValues = [
     'house',
     'townhome',
     'multi-family',
@@ -53,8 +53,8 @@ const PropertySchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    propertyType: {
-        type: PropertyType,
+    homeType: {
+        type: HomeType,
         required: true
     },
     contactDetails: {
@@ -68,7 +68,11 @@ const PropertySchema = new mongoose.Schema({
     comments: {
         type: [String],
         required: false
-    }
+    },
+    creator: {
+        type: String,
+        required: true
+    },
 });
 
 module.exports = mongoose.model("Property", PropertySchema);

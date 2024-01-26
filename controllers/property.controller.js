@@ -52,7 +52,7 @@ const getAllProperties = async (req, res) => {
 
 const postProperty = async (req, res) => {
         console.log("postProperty:" + req.body);
-    const property = new Property(req.body);
+        const property = new Property(req.body.post);
     try {
         await property.save();
         res.status(201).send("OK");

@@ -1,14 +1,14 @@
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Filter from './FIlter';
 import MenuItem from '@mui/material/MenuItem';
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import './filters.css';
 import { FiltersOptions, Price, RoomsOption, homeTypeOptions, roomsOptions } from './filtersTypes';
 import Button from '@mui/material/Button';
-import { getCities } from '../../services/citiesService';
+import { CitiesContext } from '../../App';
 
 interface FiltersProps {
     filters: FiltersOptions;
@@ -19,26 +19,13 @@ interface FiltersProps {
 const Filters = (filtersProp: FiltersProps ) => {
     const {filters, setFilters, getPosts} = filtersProp;
 
-    const [cities, setCities] = useState([]);
-
-    useEffect(() => {fetchCities()}, []);
-
-    const fetchCities = async () => {
-        try {
-            const response = await getCities();
-            response && setCities((response.data.result.records.map((location: { [x: string]: any; }) => location['שם_ישוב_לועזי']))); 
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
+    const {cities} = useContext(CitiesContext);
 
     const updateLocation = ((location: string) => setFilters({...filters, location}));
     const updateDealType = (newDealType: FiltersOptions['dealType']) => setFilters({...filters, dealType: newDealType});
     const updatPrice = (newPrice: Price) => setFilters({...filters, price: newPrice});
-
     const updateMinBedrooms = (updatedBedrooms: number) => setFilters({...filters, bathrooms: updatedBedrooms as RoomsOption});
     const updateMinBathrooms = (updatedBathrooms: number) => setFilters({...filters, bathrooms: updatedBathrooms as RoomsOption});
-
     const updateHomeType = (newHomeType: FiltersOptions['homeType']) => setFilters({...filters, homeType: newHomeType});
 
     return (
