@@ -13,7 +13,6 @@ const login = async (req, res) => {
         if (await bcrypt.compare(password, user.password)) {
             const {accessToken, refreshToken} = generateTokens(user._id);
             if (!user.tokens) user.tokens = [refreshToken];
-        
             else user.tokens.push(refreshToken);
             await user.save();
             user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": user._id}) : res.status(403).send()
@@ -30,15 +29,19 @@ const googleLogin = async (req, res) => {
             access_token:googleToken
         }})
         if(validationRespone.status == 200) {
-            const userId = validationRespone.data.email;
-            const {accessToken, refreshToken} = generateTokens(userId);
-            const isUserRegistered = await User.findOne({username:userId});
-            if(!isUserRegistered) {
-                await User.insertMany({username: userId, email: userId, password: "####"});
+            const userName = validationRespone.data.email;
+            let registeredUser = await User.findOne({username:userName});
+            if(!registeredUser) {
+                registeredUser = (await User.insertMany({username: userName, email: userName, password: "####"}))[0];
+                console.log(registeredUser)
                 const defaultPhotoPath = path.resolve('./photos/defaultUserImage.png');
-                fs.cp(defaultPhotoPath, './photos/users/' + userId  + '.png', () => console.log('Default Image saved'));
+                fs.cp(defaultPhotoPath, './photos/users/' + userName  + '.png', () => console.log('Default Image saved'));
             }
-            return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": userId});
+            const {accessToken, refreshToken} = generateTokens(registeredUser._id);
+            if (!registeredUser.tokens) registeredUser.tokens = [refreshToken];
+            else registeredUser.tokens.push(refreshToken);
+            await registeredUser.save();
+            return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": registeredUser._id});
         }
     } catch (e) {
         console.log(e)
