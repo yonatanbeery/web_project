@@ -6,6 +6,8 @@ let upload = multer({ dest: 'photos/users/' })
 
 router.post("/login", Users.login);
 
+router.post("/googleLogin", Users.googleLogin);
+
 router.post("/signup", upload.any(), Users.signup);
 
 router.post("/refreshToken", Users.refreshToken);

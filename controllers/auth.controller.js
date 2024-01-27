@@ -2,6 +2,8 @@ const fs = require("fs");
 const User = require("../models/users.model");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const path = require('path');
 
 const login = async (req, res) => {
     console.log("login request");
@@ -9,9 +11,8 @@ const login = async (req, res) => {
         const {username, password} = req.body.data;
         const user = await User.findOne({username});
         if (await bcrypt.compare(password, user.password)) {
-            const {accessToken, refreshToken} = generateTokens(user);
+            const {accessToken, refreshToken} = generateTokens(user._id);
             if (!user.tokens) user.tokens = [refreshToken];
-        
             else user.tokens.push(refreshToken);
             await user.save();
             user ? res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": user._id}) : res.status(403).send()
@@ -20,6 +21,33 @@ const login = async (req, res) => {
         res.status(403).json({ message: err.message });
     }
 };
+
+const googleLogin = async (req, res) => {
+    const googleToken = req.body.data.access_token;
+    try{
+        const validationRespone = await axios.get('https://oauth2.googleapis.com/tokeninfo', {params:{
+            access_token:googleToken
+        }})
+        if(validationRespone.status == 200) {
+            const userName = validationRespone.data.email;
+            let registeredUser = await User.findOne({username:userName});
+            if(!registeredUser) {
+                registeredUser = (await User.insertMany({username: userName, email: userName, password: "####"}))[0];
+                console.log(registeredUser)
+                const defaultPhotoPath = path.resolve('./photos/defaultUserImage.png');
+                fs.cp(defaultPhotoPath, './photos/users/' + userName  + '.png', () => console.log('Default Image saved'));
+            }
+            const {accessToken, refreshToken} = generateTokens(registeredUser._id);
+            if (!registeredUser.tokens) registeredUser.tokens = [refreshToken];
+            else registeredUser.tokens.push(refreshToken);
+            await registeredUser.save();
+            return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken, "userId": registeredUser._id});
+        }
+    } catch (e) {
+        console.log(e)
+        return res.status(403).send("Unauthorized");
+    }
+}
 
 const refreshToken = async (req, res) => {
     console.log("new access token request");
@@ -36,7 +64,7 @@ const refreshToken = async (req, res) => {
                 await user.save();
                 return res.status(403).send("Invalid request");
             }
-            const {accessToken, refreshToken} = generateTokens(user);
+            const {accessToken, refreshToken} = generateTokens(user._id);
             
             user.tokens[user.tokens.indexOf(oldRrefreshToken)] = refreshToken;
             await user.save();
@@ -62,7 +90,7 @@ const signup = async (req, res) => {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
                 fs.rename(req.files[0].path, './photos/users/' + username  + '.png', () => console.log('Image saved'));
-                const {accessToken, refreshToken} = generateTokens(user);
+                const {accessToken, refreshToken} = generateTokens(user._id);
                 return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }
         }
@@ -96,14 +124,14 @@ const logout = async (req, res) => {
     });
 };
 
-const generateTokens = (user) => {
+const generateTokens = (userId) => {
     const accessToken = jwt.sign(
-        {'_id': user._id},
+        {'_id': userId},
         process.env.ACCESS_TOKEN_SECRET,
         {expiresIn: "1h"}
     );
     const refreshToken = jwt.sign(
-        {'_id': user._id},
+        {'_id': userId},
         process.env.REFRESH_TOKEN_SECRET
     );
     return {accessToken, refreshToken};
@@ -111,6 +139,7 @@ const generateTokens = (user) => {
 
 module.exports = {
     login,
+    googleLogin,
     signup,
     refreshToken,
     logout

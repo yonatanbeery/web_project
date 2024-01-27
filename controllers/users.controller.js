@@ -19,17 +19,25 @@ const updateUserSettings = async (req, res) => {
 };
 
 const getUserSettings = async (req, res) => {
-    console.log("get user " + req.userId + " details");
-    const user = await User.findById(req.userId);
-    if(!user) return res.status(400).send("user not found");
-    return res.status(200).send({user});
+    try{
+        console.log("get user " + req.userId + " details");
+        const user = await User.findById(req.userId);
+        if(!user) return res.status(400).send("user not found");
+        return res.status(200).send({user});
+    } catch (err){
+        return res.status(500).json({ message: err.message });
+    }
 };
 
 const getUserImage = async (req, res) => {
-    console.log("get user " + req.userId + " image");
-    const user = await User.findById(req.userId);
-    if(!user) return res.status(400).send("user not found");
-    return res.status(200).sendFile(resolve('./photos/users/' + user.username + '.png'));
+    try {
+        console.log("get user " + req.userId + " image");
+        const user = await User.findById(req.userId);
+        if(!user) return res.status(400).send("user not found");
+        return res.status(200).sendFile(resolve('./photos/users/' + user.username + '.png'));
+    } catch (err){
+        return res.status(500).json({ message: err.message });
+    }
 };
 
 module.exports = {
