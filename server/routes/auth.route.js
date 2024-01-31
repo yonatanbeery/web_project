@@ -40,11 +40,31 @@ let upload = multer({ dest: 'photos/users/' })
 *               email: 'bob@gmail.com'
 *               password: '123456'
 *               userImage: 'bob123.png'
+*       UserLogin:
+*           type: object
+*           required:
+*               - username
+*               - password
+*           properties:
+*               data:
+*                   type: object
+*                   properties:
+*                       username:
+*                           type: string
+*                           descrioption: The user's display name
+*                       password:
+*                           type: string
+*                           description: The user's password
+*           example:
+*               data:
+*                   username: 'bob123'
+*                   password: '123456'
 *       Tokens:
 *           type: object
 *           required:
 *               - accessToken
 *               - refreshToken
+*               - userId
 *           properties:
 *               accessToken:
 *                   type: string
@@ -52,6 +72,9 @@ let upload = multer({ dest: 'photos/users/' })
 *               refreshToken:
 *                   type: string
 *                   description: The JWT refresh token
+*               userId:
+*                   type: string
+*                   description: User ID
 *           example:
 *               accessToken: '123cd123x1xx1'
 *               refreshToken: '134r2134cr1x3c'
@@ -68,14 +91,14 @@ let upload = multer({ dest: 'photos/users/' })
 *           content:
 *               application/json:
 *                   schema:
-*                       $ref: '#/components/schemas/User'
-*           responses:
-*               200:
-*                   description: The acess & refresh tokens
-*                   content:
-*                       application/json:
-*                           schema:
-*                               $ref: '#/components/schemas/Tokens'
+*                       $ref: '#/components/schemas/UserLogin'
+*       responses:
+*           200:
+*               description: The acess & refresh tokens
+*               content:
+*                   application/json:
+*                       schema:
+*                           $ref: '#/components/schemas/Tokens'
 */
 router.post("/login", Users.login);
 
