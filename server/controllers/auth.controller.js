@@ -34,8 +34,7 @@ const googleLogin = async (req, res) => {
             if(!registeredUser) {
                 registeredUser = (await User.insertMany({username: userName, email: userName, password: "####"}))[0];
                 console.log(registeredUser)
-                const defaultPhotoPath = path.resolve('./photos/defaultUserImage.png');
-                fs.cp(defaultPhotoPath, './photos/users/' + userName  + '.png', () => console.log('Default Image saved'));
+                fs.cp(path.resolve('./photos/defaultUserImage.png'), './photos/users/' + userName  + '.png', () => console.log('Default Image saved'));
             }
             const {accessToken, refreshToken} = generateTokens(registeredUser._id);
             if (!registeredUser.tokens) registeredUser.tokens = [refreshToken];
@@ -89,7 +88,8 @@ const signup = async (req, res) => {
             } else {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = await User.insertMany({username, email, password: encryptedPassword});
-                fs.rename(req.files[0].path, './photos/users/' + username  + '.png', () => console.log('Image saved'));
+                if(req.files) fs.rename(req.files[0].path, './photos/users/' + username  + '.png', () => console.log('Image saved'));
+                else fs.cp(path.resolve('./photos/defaultUserImage.png'), './photos/users/' + username  + '.png', () => console.log('Default Image saved'));
                 const {accessToken, refreshToken} = generateTokens(user._id);
                 return res.status(200).send({"accessToken": accessToken, "refreshToken": refreshToken});
             }

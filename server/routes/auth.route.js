@@ -19,26 +19,122 @@ let upload = multer({ dest: 'photos/users/' })
 *       User:
 *           type: object
 *           required:
+*               - username
 *               - email
 *               - password
 *           properties:
+*               username:
+*                   type: string
+*                   descrioption: The user's display name
 *               email:
 *                   type: string
-*                   description: The user email
+*                   description: The user's email
 *               password:
 *                   type: string
-*                   description: The user password
+*                   description: The user's password
+*               userImage:
+*                   type: file
+*                   descrioption: The user's profile picture
 *           example:
+*               username: 'bob123'
 *               email: 'bob@gmail.com'
 *               password: '123456'
+*               userImage: 'bob123.png'
+*       Tokens:
+*           type: object
+*           required:
+*               - accessToken
+*               - refreshToken
+*           properties:
+*               accessToken:
+*                   type: string
+*                   description: The JWT access token
+*               refreshToken:
+*                   type: string
+*                   description: The JWT refresh token
+*           example:
+*               accessToken: '123cd123x1xx1'
+*               refreshToken: '134r2134cr1x3c'
+*/
+
+/**
+* @swagger
+* /auth/login:
+*   post:
+*       summary: user login
+*       tags: [Auth]
+*       requestBody:
+*           required: true
+*           content:
+*               application/json:
+*                   schema:
+*                       $ref: '#/components/schemas/User'
+*           responses:
+*               200:
+*                   description: The acess & refresh tokens
+*                   content:
+*                       application/json:
+*                           schema:
+*                               $ref: '#/components/schemas/Tokens'
 */
 router.post("/login", Users.login);
 
 router.post("/googleLogin", Users.googleLogin);
 
+/**
+* @swagger
+* /auth/signup:
+*   post:
+*       summary: registers a new user
+*       tags: [Auth]
+*       requestBody:
+*           required: true
+*           content:
+*               application/json:
+*                   schema:
+*                       $ref: '#/components/schemas/User'
+*       responses:
+*           200:
+*               description: The new user's authentication token
+*               content:
+*                   application/json:
+*                       schema:
+*                           $ref: '#/components/schemas/Tokens'
+*/
 router.post("/signup", upload.any(), Users.signup);
 
+/**
+* @swagger
+* /auth/refreshToken:
+*   post:
+*       summary: get a new access token using the refresh token
+*       tags: [Auth]
+*       description: need to provide the refresh token in the auth header
+*       security:
+*           - bearerAuth: []
+*       responses:
+*           200:
+*               description: The acess & refresh tokens
+*               content:
+*                   application/json:
+*                       schema:
+*                           $ref: '#/components/schemas/Tokens'
+*/
 router.post("/refreshToken", Users.refreshToken);
+
+/**
+* @swagger
+* /auth/logout:
+*   post:
+*       summary: logout a user
+*       tags: [Auth]
+*       description: need to provide the refresh token in the auth header
+*       security:
+*           - bearerAuth: []
+*       responses:
+*           200:
+*               description: logout completed successfully
+*/
 
 router.post("/logout", Users.logout);
 
