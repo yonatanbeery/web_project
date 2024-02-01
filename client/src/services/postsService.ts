@@ -1,6 +1,5 @@
 import axios from "axios";
 import { FiltersOptions } from "../components/filters/filtersTypes";
-import { Post } from "../components/types/postTypes";
 
 export interface Photo {
     fileName: string;
@@ -56,12 +55,13 @@ export const getPostPhotos = async (id: string, access_token: string) => {
     }
 }
 
-export const postProperty = (post: Post, access_token: string) => {
+export const postProperty = (formData: FormData, access_token: string) => {
     const headers = {
-        "Authorization": access_token
+        "Authorization": access_token,
+        "Content-Type": "image/form-data" ,
     }
     try {
-        axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, {post}, {headers})
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, formData, {headers})
     } catch (error) {
         console.error('Error fetching data:', error);
     }
