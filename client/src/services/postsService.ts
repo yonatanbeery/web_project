@@ -61,7 +61,30 @@ export const postProperty = (formData: FormData, access_token: string) => {
         "Content-Type": "image/form-data" ,
     }
     try {
-        axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, formData, {headers})
+        return axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, formData, {headers})
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+export const updateProperty = (formData: FormData, postId:string, access_token: string) => {
+    const headers = {
+        "Authorization": access_token,
+        "Content-Type": "image/form-data" ,
+    }
+    try {
+        return axios.put(`${import.meta.env.VITE_SERVER_URL}/properties/${postId}`, formData, {headers})
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+export const delelteProperty = (postId:string, access_token: string) => {
+    const headers = {
+        "Authorization": access_token,
+    }
+    try {
+        return axios.delete(`${import.meta.env.VITE_SERVER_URL}/properties/${postId}`, {headers})
     } catch (error) {
         console.error('Error fetching data:', error);
     }

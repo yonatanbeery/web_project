@@ -27,6 +27,7 @@ const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
     
     const query = {
+        ...(req.query.creator && { creator: { $eq: req.query.creator } }),
         ...(req.query.price?.maxPrice && { price: { $lte: req.query.price.maxPrice } }),
         ...(req.query.price?.minPrice && { price: { $gte: req.query.price.minPrice } }),
         ...(req.query.location && { location: req.query.location }),
@@ -83,11 +84,62 @@ const postProperty = async (req, res) => {
     }
 };
 
-const putPropertyById = (req, res) => {
-    res.send("put property by id: " + req.params.id);
+
+const updateProperty = async (req, res) => {
+    console.log("updateProperty:");
+    const updatedPost = JSON.parse(req.body.post);
+    console.log({...JSON.parse(req.body.post)});
+try {
+    const property = await Property.findOne({_id:req.params.id});
+    property.dealType = updatedPost.dealType;
+    property.location = updatedPost.location;
+    property.price = updatedPost.price;
+    property.bedrooms = updatedPost.bedrooms;
+    property.bathrooms = updatedPost.bathrooms;
+    property.area = updatedPost.area;
+    property.homeType = updatedPost.homeType;
+    property.contactDetails = updatedPost.contactDetails;
+    property.freeText = updatedPost.freeText;
+    property.comments = updatedPost.comments;
+    property.creator = updatedPost.creator;
+    property.save()
+    if(req.files.length > 0) {
+        const directoryPath = `./photos/posts/${req.params.id}`;
+        try {
+            await fs.rm(directoryPath, { recursive: true });
+        } catch (err) {
+            console.error(`Error removing old directory: ${err}`);
+        }
+
+        try {
+            await fs.mkdir(directoryPath, { recursive: true });
+            req.files.forEach(async photo => {
+                const directoryPath = `./photos/posts/${req.params.id}`;
+                
+                const { path: filePath, originalname } = photo;
+                try {
+                    const fileContent = await fs.readFile(filePath);
+                    await fs.writeFile(`${directoryPath}/${originalname}`, fileContent);
+                
+                    console.log('File has been written successfully!');
+                } catch (error) {
+                        console.error('Error writing file:', error);
+                    }
+                });
+        } catch (err) {
+            console.error(`Error creating directory: ${err}`);
+        }
+        };
+        res.status(201).send("OK");
+} catch (err) {
+    console.log(err);
+    res.status(406).send("fail: " + err.message);
+}
 };
 
-const deletePropertyById = (req, res) => {
+const deletePropertyById = async (req, res) => {
+    console.log("deleting property " + req.params.id);
+    await Property.deleteOne({_id: req.params.id});
     res.send("delete property by id: " + req.params.id);
 };
 
@@ -126,7 +178,7 @@ const getPropertyById = async (req, res) => {
 module.exports = {
     getAllProperties,
     postProperty,
-    putPropertyById,
+    updateProperty,
     deletePropertyById,
     postPropertyComment,
     getPropertyById,

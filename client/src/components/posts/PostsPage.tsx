@@ -1,28 +1,23 @@
-import Filters from "./filters/FIlters"
+import Filters from "../filters/FIlters"
 import {  useContext, useEffect, useState } from 'react';
 import PostBox from "./PostBox";
-import { Post } from "./types/postTypes";
-import './styles/postsPage.css'
-import { Photo, getPosts } from "../services/postsService";
+import { Post } from "../types/postTypes";
+import '../styles/postsPage.css'
+import { Photo, getPosts } from "../../services/postsService";
 import { Typography } from "@mui/material";
-import { FiltersOptions } from "./filters/filtersTypes";
-import {AuthContext} from "../App";
-import Login from "./Login";
+import { FiltersOptions } from "../filters/filtersTypes";
+import {AuthContext} from "../../App";
+import Login from "../Login";
 import PostDetailsCard from "./PostDetailsCard";
 import { Buffer } from 'buffer';
+import PostEditor from "../NewPost/NewPostCard";
 
-const PostsPage = (filtersProp: FiltersOptions) => {
+const PostsPage = ({userId}:{userId?:string}) => {
     const {authToken} = useContext(AuthContext);
     const [posts, setPosts] = useState<Post []>([]);
     const [openPost, setOpenPost] = useState<Post | null>();
-    const [filters, setFilters] = useState<FiltersOptions>({
-        location: filtersProp.location,
-        dealType: filtersProp.dealType,
-        price: filtersProp.price,
-        bedrooms: filtersProp.bedrooms,
-        bathrooms: filtersProp.bathrooms,
-        homeType: filtersProp.homeType
-    });
+    const [filters, setFilters] = useState<FiltersOptions>({});
+    const [editedPost, setEditedPost] = useState<Post>();
     
     const onCommentAdded = async (newComment: string) => {
         openPost && setPosts((prevPosts: Post[]) => prevPosts?.map((post) => (post._id === openPost._id ? {...openPost, comments: openPost.comments?.concat([newComment])} : post)) || []);
@@ -32,10 +27,11 @@ const PostsPage = (filtersProp: FiltersOptions) => {
         if (authToken) {
             fetchPosts();
         }
-    }, [authToken]);  
+    }, [authToken]);
 
     const fetchPosts = async () => {
         try {
+            if(userId) filters.creator = userId;
             const response = await getPosts(filters, authToken.accessToken);
             const costumPosts : Post[] = response?.data.map((post: Post) => ({
                 ...post,
@@ -54,23 +50,23 @@ const PostsPage = (filtersProp: FiltersOptions) => {
     };
 
     return (
-        authToken.accessToken
-            ? <>
+        authToken.accessToken ? 
+            <>
+                {!!editedPost ? <PostEditor post={editedPost}/> :
+                <>
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>
                     {posts && posts.length
-                        ? posts.map((post: Post) => <PostBox  {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null}} />) 
+                        ? posts.map((post: Post) => <PostBox  
+                        {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null, isEditable: !!userId, setEditedPost}} />) 
                         : <Typography className="noResults" variant="h4" color="text.secondary">
                             We couldn't find a property that matches your search... <br />
                             Please try to modify your selections.
                         </Typography>
                     }
                 </div>
-                {openPost && 
-                    <>
-                        <PostDetailsCard {...{openPost, setOpenPost, onCommentAdded}} />
-                    </>
-                }
+                {openPost && <PostDetailsCard {...{openPost, setOpenPost, onCommentAdded}} />}
+                </>}
             </>
             :  <Login/>
 

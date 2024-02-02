@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react'
 import Navbar from './components/Navbar';
 import './App.css'
-import PostsPage from './components/PostsPage';
+import PostsPage from './components/posts/PostsPage';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
@@ -10,6 +10,7 @@ import { useCookies } from "react-cookie";
 import moment from 'moment';
 import PostEditor from './components/NewPost/NewPostCard';
 import { getCities } from './services/citiesService';
+import MyPosts from './components/myPosts/MyPosts';
 
 export type authTokenType = {accessToken:string, refreshToken:string, userId: string}
 
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: "/Profile",
     element: <Profile />,
+  },
+  {
+    path: "/MyPosts",
+    element: <MyPosts />,
   },
   {
     path: "/NewPost",

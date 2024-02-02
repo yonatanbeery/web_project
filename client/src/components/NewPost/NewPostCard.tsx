@@ -17,7 +17,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
 import { AuthContext, CitiesContext } from '../../App';
 import Button from '@mui/material/Button';
-import { postProperty } from '../../services/postsService';
+import { delelteProperty, postProperty, updateProperty } from '../../services/postsService';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
@@ -49,7 +49,6 @@ const initialPost = {
 
 const PostEditor = (props: PostEditorProps) => {
     const { post } = props;
-
     const [ newPost, setNewPost ] = useState<Post>(post || initialPost);
     const {cities} = useContext(CitiesContext);
     const {authToken} = useContext(AuthContext);
@@ -69,10 +68,10 @@ const PostEditor = (props: PostEditorProps) => {
     const updateEmailAddress = (EmailAddress: string) => setNewPost({...newPost, contactDetails: {...newPost.contactDetails, EmailAddress} as ContactDetails});
     const updateFreeText = (freeText: string) => setNewPost({...newPost, freeText});
     const updateCreator = () => setNewPost({...newPost, creator: authToken.userId});
-
+    const [errorMessage, setErrorMessage] = useState<String>();
     const [postPhotos, setPostPhotos] = useState<any[]>([]);
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = (event:any) => {
         const photos = event.target.files;
         const photosToSave: SetStateAction<any[]> = [];
         Array.prototype.forEach.call(photos, (photo: File) => {
@@ -82,12 +81,25 @@ const PostEditor = (props: PostEditorProps) => {
     };
 
     const handlePost = async () => {
-        const formData = new FormData();
-        postPhotos.forEach(photo => formData.append('files', photo))
-        formData.append('post', JSON.stringify(newPost))
-        postProperty(formData, authToken.accessToken);
-        setNewPost(initialPost);
-        navigate('/');   
+        if(newPost.dealType && newPost.location && newPost.price && newPost.bathrooms && 
+            newPost.bathrooms && newPost.homeType && newPost.area &&
+            newPost.contactDetails?.EmailAddress && newPost.contactDetails?.name && newPost.contactDetails?.phoneNumber){
+                const formData = new FormData();
+                postPhotos.forEach(photo => formData.append('files', photo))
+                formData.append('post', JSON.stringify(newPost))
+                if(post?._id) {
+                    updateProperty(formData, post._id, authToken.accessToken)?.then(() => {
+                        navigate('/');
+                    })
+                } else {
+                    postProperty(formData, authToken.accessToken)?.then(() => {
+                        setNewPost(initialPost);
+                        navigate('/');
+                    })
+                }
+            } else {
+                setErrorMessage("please fill out all the mendatory fields")
+            }
     }   
 
     const handleRemovePhoto = (index: number) => {
@@ -99,7 +111,7 @@ const PostEditor = (props: PostEditorProps) => {
     };
 
     return (
-        <div style={{width: '1800px'}}>
+        <div style={{width: '95vw'}}>
             <Typography variant="h3" color="text.secondary" sx={{marginTop: '20px'}}>
                 {post ? 'Edit your post' : 'Post your property'}
             </Typography>
@@ -127,6 +139,7 @@ const PostEditor = (props: PostEditorProps) => {
                     </RadioGroup>
                     <InputWithTitle title='City:'>
                         <Autocomplete
+                            value={newPost.location}
                             fullWidth
                             disablePortal
                             options={cities}
@@ -137,6 +150,7 @@ const PostEditor = (props: PostEditorProps) => {
                     </InputWithTitle>
                     <InputWithTitle title='Price:'>
                         <Input
+                            value={newPost.price}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatPrice(parseInt(event.target.value))}
                         />
@@ -144,23 +158,26 @@ const PostEditor = (props: PostEditorProps) => {
                     </InputWithTitle>
                     <InputWithTitle title='Number of bedrooms:'>
                         <Input
+                        value={newPost.bedrooms}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateBedrooms(parseInt(event.target.value))}
                         />
                     </InputWithTitle>
                     <InputWithTitle title='Number of bathrooms:'>
                         <Input
+                        value={newPost.bathrooms}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateBathrooms(parseInt(event.target.value))}
                         />
                     </InputWithTitle>
                     <InputWithTitle title='Home type:'>
-                        <Select fullWidth onChange={(event: SelectChangeEvent) => updateHomeType(event.target.value as HomeTypeOption)} defaultValue={newPost.homeType}>
+                        <Select fullWidth value={newPost.homeType} onChange={(event: SelectChangeEvent) => updateHomeType(event.target.value as HomeTypeOption)} defaultValue={newPost.homeType}>
                             {homeTypeOptions.map(option => <MenuItem value={option}>{option}</MenuItem>)}
                         </Select>
                     </InputWithTitle>
                     <InputWithTitle title='Area size:'>
                         <Input
+                        value={newPost.area}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatArea(parseInt(event.target.value))}
                         />
@@ -174,16 +191,19 @@ const PostEditor = (props: PostEditorProps) => {
                     <div style={{marginLeft: '42px'}}>
                         <InputWithTitle title='Name:'>
                             <Input
+                            value={newPost.contactDetails?.name}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateName(event.target.value)}
                             />
                         </InputWithTitle>
                         <InputWithTitle title='Phone number:'>
                             <Input
+                            value={newPost.contactDetails?.phoneNumber}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatePhoneNumber(event.target.value)}
                             />
                         </InputWithTitle>
                         <InputWithTitle title='Email address:'>
                             <Input
+                            value={newPost.contactDetails?.EmailAddress}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateEmailAddress(event.target.value)}
                             />
                         </InputWithTitle>
@@ -194,17 +214,8 @@ const PostEditor = (props: PostEditorProps) => {
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>
                             Photos:
                         </Typography>
-                        {Object.keys(newPost.photos).length 
-                            ? <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
-                            {newPost.photos.map((photo) => (
-                                <ImageListItem key={photo.title}>
-                                <img key={photo.title} src={photo.src} alt={photo.title} />
-                                </ImageListItem>
-                            ))}
-                            </ImageList>
-                            : 
-                            <>
-                                <input
+                        <> 
+                        <input
                                     accept="image/*"
                                     multiple
                                     type="file"
@@ -218,46 +229,47 @@ const PostEditor = (props: PostEditorProps) => {
                                                 <ImageListItemBar 
                                                     actionPosition="left"
                                                     position="top"
-                                                    sx={{
-                                                        background:
+                                                    sx={{background:
                                                         'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                                                        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-                                                    }}
+                                                        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'}}
                                                     actionIcon={
                                                         <IconButton
                                                             sx={{ color: 'white' }}
                                                             onClick={() => handleRemovePhoto(index)}
-                                                            id='adiiiiiii'
-                                                            >
+                                                            id='delte post'>
                                                             <DeleteIcon />
-                                                        </IconButton>   
-                                                    }
-                                                    >
+                                                        </IconButton>}>
                                                 </ImageListItemBar>
-                                
                                             </ImageListItem>
                                         </div>)}
                                 </ImageList>
+                                <ImageList>
+                                    {postPhotos.length == 0 && newPost.photos.map(photo => 
+                                                        <ImageListItem>
+                                                            <img src={photo.src} alt="previous Image"/>
+                                                        </ImageListItem>)}
+                                </ImageList>
                             </>
-                        }
-                        
                     </div>
                     <div>
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>
                             Free text:
                         </Typography>
-                        <TextField fullWidth multiline rows={5} onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateFreeText(event.target.value)}/>
+                        <TextField value={newPost.freeText} fullWidth multiline rows={5} onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateFreeText(event.target.value)}/>
                     </div>
                 </div>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between',marginTop: '30px'}}>
-                <Button variant="contained" color="error" size="large" sx={!post ? {visibility: 'hidden'} : {}}>
+                {post?._id && <Button variant="contained" color="error" size="large" onClick={() => delelteProperty(post?._id!, authToken.accessToken)}>
                     Delete Post
-                </Button>
+                </Button>}
                 <Button variant="contained" color="success" size="large" onClick={handlePost}>
                     Post
                 </Button>
             </div>
+            {errorMessage && <Typography color="red" variant="h6" gutterBottom  sx={{marginRight: 13, marginLeft: 13}}>
+                        {errorMessage}
+                    </Typography>}
         </div>
     )
 }

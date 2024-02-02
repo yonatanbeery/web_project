@@ -45,7 +45,7 @@ const Profile = () => {
 
     const setImage = async () => {
         const response = await fetch('http://localhost:8080/user/getUserImage', {
-            method: "POST",
+            method: "GET",
             headers: {
               "Content-Type": "image/png",
               "Authorization": authToken.accessToken
@@ -56,7 +56,7 @@ const Profile = () => {
 
     useEffect(() => {
         setImage();
-        axios.post('http://localhost:8080/user/getUserSettings', {}, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
+        axios.get('http://localhost:8080/user/getUserSettings', {headers:{"Authorization": authToken.accessToken}}).then((res) => {
             setUsername(res.data.user.username);
             setEmail(res.data.user.email);
         });

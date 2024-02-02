@@ -1,6 +1,7 @@
 const fs = require("fs");
 const {resolve} = require('path');
 const User = require("../models/users.model");
+const bcrypt = require("bcrypt");
 
 const updateUserSettings = async (req, res) => {
     console.log("updating user details");
