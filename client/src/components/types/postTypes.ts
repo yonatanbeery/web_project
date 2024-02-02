@@ -19,5 +19,5 @@ export interface Post {
     contactDetails?: ContactDetails;
     comments?: string[];
     freeText?: string;
-    creator?: string;
+    creator: string;
 }

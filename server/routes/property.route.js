@@ -167,7 +167,7 @@ router.post("/", update.any(), authenticate, Property.postProperty);
 *           200:
 *               description: updated post successfully
 */
-router.put("/:id",authenticate, Property.updateProperty);
+router.put("/:id",update.any(), authenticate, Property.updateProperty);
 
 /**
 * @swagger

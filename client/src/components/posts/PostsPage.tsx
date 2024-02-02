@@ -53,7 +53,8 @@ const PostsPage = ({userId}:{userId?:string}) => {
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>
                     {posts && posts.length
-                        ? posts.map((post: Post) => <PostBox  {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null}} />) 
+                        ? posts.map((post: Post) => <PostBox  
+                        {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null, isEditable: !!userId}} />) 
                         : <Typography className="noResults" variant="h4" color="text.secondary">
                             We couldn't find a property that matches your search... <br />
                             Please try to modify your selections.

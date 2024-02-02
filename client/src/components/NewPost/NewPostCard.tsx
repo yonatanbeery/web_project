@@ -17,7 +17,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import SearchIcon from '@mui/icons-material/Search';
 import { AuthContext, CitiesContext } from '../../App';
 import Button from '@mui/material/Button';
-import { postProperty } from '../../services/postsService';
+import { delelteProperty, postProperty, updateProperty } from '../../services/postsService';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
@@ -49,7 +49,6 @@ const initialPost = {
 
 const PostEditor = (props: PostEditorProps) => {
     const { post } = props;
-
     const [ newPost, setNewPost ] = useState<Post>(post || initialPost);
     const {cities} = useContext(CitiesContext);
     const {authToken} = useContext(AuthContext);
@@ -89,10 +88,16 @@ const PostEditor = (props: PostEditorProps) => {
                 const formData = new FormData();
                 postPhotos.forEach(photo => formData.append('files', photo))
                 formData.append('post', JSON.stringify(newPost))
-                postProperty(formData, authToken.accessToken)?.then(() => {
-                    setNewPost(initialPost);
-                    navigate('/');
-                })
+                if(post?._id) {
+                    updateProperty(formData, post._id, authToken.accessToken)?.then(() => {
+                        navigate('/');
+                    })
+                } else {
+                    postProperty(formData, authToken.accessToken)?.then(() => {
+                        setNewPost(initialPost);
+                        navigate('/');
+                    })
+                }
             } else {
                 setErrorMessage("please fill out all the mendatory fields")
             }
@@ -135,6 +140,7 @@ const PostEditor = (props: PostEditorProps) => {
                     </RadioGroup>
                     <InputWithTitle title='City:'>
                         <Autocomplete
+                            value={newPost.location}
                             fullWidth
                             disablePortal
                             options={cities}
@@ -145,6 +151,7 @@ const PostEditor = (props: PostEditorProps) => {
                     </InputWithTitle>
                     <InputWithTitle title='Price:'>
                         <Input
+                            value={newPost.price}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatPrice(parseInt(event.target.value))}
                         />
@@ -152,23 +159,26 @@ const PostEditor = (props: PostEditorProps) => {
                     </InputWithTitle>
                     <InputWithTitle title='Number of bedrooms:'>
                         <Input
+                        value={newPost.bedrooms}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateBedrooms(parseInt(event.target.value))}
                         />
                     </InputWithTitle>
                     <InputWithTitle title='Number of bathrooms:'>
                         <Input
+                        value={newPost.bathrooms}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateBathrooms(parseInt(event.target.value))}
                         />
                     </InputWithTitle>
                     <InputWithTitle title='Home type:'>
-                        <Select fullWidth onChange={(event: SelectChangeEvent) => updateHomeType(event.target.value as HomeTypeOption)} defaultValue={newPost.homeType}>
+                        <Select fullWidth value={newPost.homeType} onChange={(event: SelectChangeEvent) => updateHomeType(event.target.value as HomeTypeOption)} defaultValue={newPost.homeType}>
                             {homeTypeOptions.map(option => <MenuItem value={option}>{option}</MenuItem>)}
                         </Select>
                     </InputWithTitle>
                     <InputWithTitle title='Area size:'>
                         <Input
+                        value={newPost.area}
                             type="number"
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatArea(parseInt(event.target.value))}
                         />
@@ -182,16 +192,19 @@ const PostEditor = (props: PostEditorProps) => {
                     <div style={{marginLeft: '42px'}}>
                         <InputWithTitle title='Name:'>
                             <Input
+                            value={newPost.contactDetails?.name}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateName(event.target.value)}
                             />
                         </InputWithTitle>
                         <InputWithTitle title='Phone number:'>
                             <Input
+                            value={newPost.contactDetails?.phoneNumber}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updatePhoneNumber(event.target.value)}
                             />
                         </InputWithTitle>
                         <InputWithTitle title='Email address:'>
                             <Input
+                            value={newPost.contactDetails?.EmailAddress}
                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateEmailAddress(event.target.value)}
                             />
                         </InputWithTitle>
@@ -254,14 +267,14 @@ const PostEditor = (props: PostEditorProps) => {
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>
                             Free text:
                         </Typography>
-                        <TextField fullWidth multiline rows={5} onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateFreeText(event.target.value)}/>
+                        <TextField value={newPost.freeText} fullWidth multiline rows={5} onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateFreeText(event.target.value)}/>
                     </div>
                 </div>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between',marginTop: '30px'}}>
-                <Button variant="contained" color="error" size="large" sx={!post ? {visibility: 'hidden'} : {}}>
+                {post?._id && <Button variant="contained" color="error" size="large" onClick={() => delelteProperty(post?._id!, authToken.accessToken)}>
                     Delete Post
-                </Button>
+                </Button>}
                 <Button variant="contained" color="success" size="large" onClick={handlePost}>
                     Post
                 </Button>
