@@ -11,6 +11,7 @@ export interface Price {
 }
 
 export interface FiltersOptions {
+    creator?: string;
     location?: string | null;
     dealType?: DealTypeOption | null;
     price?: Price;

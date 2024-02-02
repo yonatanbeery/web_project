@@ -43,7 +43,10 @@ const Navbar = () => {
           <Link underline="none" color="black" href='/'>Find homes</Link>
         </MenuItem>
         <MenuItem>
-          <Link underline="none" color="black" href='/Profile'>Your Profile</Link>
+          <Link underline="none" color="black" href='/Profile'>My Profile</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link underline="none" color="black" href='/MyPosts'>My Posts</Link>
         </MenuItem>
         <MenuItem>
           <Link underline="none" color="black" href='/NewPost'>Create a post</Link>

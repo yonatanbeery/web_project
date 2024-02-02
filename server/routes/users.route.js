@@ -87,7 +87,6 @@ router.put("/updateProfile", update.any(),authenticate, Users.updateUserSettings
 */
 router.get("/getUserSettings",authenticate, Users.getUserSettings);
 
-
 /**
 * @swagger
 * /user/getUserImage:

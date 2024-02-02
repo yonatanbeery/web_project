@@ -1,4 +1,4 @@
-import { Post } from "./types/postTypes";
+import { Post } from "../types/postTypes";
 import Dialog from '@mui/material/Dialog';
 import { Button, IconButton, Popover, TextField, Typography } from "@mui/material";
 import PostDetail from "./PostDetail";
@@ -6,8 +6,8 @@ import { MouseEvent, useRef, useState, useEffect, useContext } from "react";
 import SendIcon from '@mui/icons-material/Send';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { AuthContext } from "../App";
-import { postComment } from "../services/postsService";
+import { AuthContext } from "../../App";
+import { postComment } from "../../services/postsService";
 
 interface PostDetailsCardProps {
     openPost: Post;
@@ -34,7 +34,7 @@ const PostDetailsCard = (props: PostDetailsCardProps) => {
 
     const handlePostComment = async () => {
         if (!newComment.trim()) return;
-        await postComment(_id, newComment, authToken.accessToken)
+        _id && await postComment(_id, newComment, authToken.accessToken)
         if (commentRef.current) commentRef.current.value = '';
         setCurrentComments(prevComments => prevComments  ? [...prevComments, newComment] : [newComment]);
         setNewComment('');
