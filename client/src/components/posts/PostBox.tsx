@@ -5,9 +5,6 @@ import Typography from '@mui/material/Typography';
 import '../styles/postsPage.css'
 import { Box, Button } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import PostEditor from "../NewPost/NewPostCard";
 
 interface PostProps {
     post: Post;
@@ -16,16 +13,12 @@ interface PostProps {
     isEditable: boolean;
 }
 
-const PostBox = (props: PostProps) => {
-    const { post, setOpenPost, photo, isEditable} = props;
+const PostBox = (props: PostProps & {setEditedPost: any}) => {
+    const { post, setOpenPost, photo, isEditable, setEditedPost} = props;
     const { location, dealType, price, bedrooms, bathrooms, homeType, area, comments } = post;
-    const [showUpdatePostCard, setShowUpdatePostCard] = useState<Boolean>(false);
-
-
 
     return (
         <Box>
-            { showUpdatePostCard ? <PostEditor post={post}/> :
             <Card className='postBox' style={{ justifyContent: "space-between"}}> 
             <Box onClick={() =>setOpenPost(post)}>
                 <div style={{height: "150px", display: 'flex', justifyContent: "center", alignItems: 'center'}}>
@@ -50,8 +43,8 @@ const PostBox = (props: PostProps) => {
                     </Typography>
                 </CardContent>
                 </Box>
-                {isEditable && <Button sx={{minWidth:"100%"}} onClick={() => setShowUpdatePostCard(true)}><EditIcon/></Button>}
-        </Card>}
+                {isEditable && <Button sx={{minWidth:"100%"}} onClick={() => setEditedPost(post)}><EditIcon/></Button>}
+        </Card>
     </Box>
     );
 };

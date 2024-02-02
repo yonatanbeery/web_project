@@ -69,7 +69,6 @@ const PostEditor = (props: PostEditorProps) => {
     const updateFreeText = (freeText: string) => setNewPost({...newPost, freeText});
     const updateCreator = () => setNewPost({...newPost, creator: authToken.userId});
     const [errorMessage, setErrorMessage] = useState<String>();
-
     const [postPhotos, setPostPhotos] = useState<any[]>([]);
 
     const handleFileUpload = (event:any) => {
@@ -215,17 +214,8 @@ const PostEditor = (props: PostEditorProps) => {
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>
                             Photos:
                         </Typography>
-                        {Object.keys(newPost.photos).length 
-                            ? <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
-                            {newPost.photos.map((photo) => (
-                                <ImageListItem key={photo.title}>
-                                <img key={photo.title} src={photo.src} alt={photo.title} />
-                                </ImageListItem>
-                            ))}
-                            </ImageList>
-                            : 
-                            <>
-                                <input
+                        <> 
+                        <input
                                     accept="image/*"
                                     multiple
                                     type="file"
@@ -239,29 +229,27 @@ const PostEditor = (props: PostEditorProps) => {
                                                 <ImageListItemBar 
                                                     actionPosition="left"
                                                     position="top"
-                                                    sx={{
-                                                        background:
+                                                    sx={{background:
                                                         'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                                                        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-                                                    }}
+                                                        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'}}
                                                     actionIcon={
                                                         <IconButton
                                                             sx={{ color: 'white' }}
                                                             onClick={() => handleRemovePhoto(index)}
-                                                            id='adiiiiiii'
-                                                            >
+                                                            id='delte post'>
                                                             <DeleteIcon />
-                                                        </IconButton>   
-                                                    }
-                                                    >
+                                                        </IconButton>}>
                                                 </ImageListItemBar>
-                                
                                             </ImageListItem>
                                         </div>)}
                                 </ImageList>
+                                <ImageList>
+                                    {postPhotos.length == 0 && newPost.photos.map(photo => 
+                                                        <ImageListItem>
+                                                            <img src={photo.src} alt="previous Image"/>
+                                                        </ImageListItem>)}
+                                </ImageList>
                             </>
-                        }
-                        
                     </div>
                     <div>
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>

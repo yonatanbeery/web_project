@@ -10,12 +10,14 @@ import {AuthContext} from "../../App";
 import Login from "../Login";
 import PostDetailsCard from "./PostDetailsCard";
 import { Buffer } from 'buffer';
+import PostEditor from "../NewPost/NewPostCard";
 
 const PostsPage = ({userId}:{userId?:string}) => {
     const {authToken} = useContext(AuthContext);
     const [posts, setPosts] = useState<Post []>([]);
     const [openPost, setOpenPost] = useState<Post | null>();
     const [filters, setFilters] = useState<FiltersOptions>({});
+    const [editedPost, setEditedPost] = useState<Post>();
     
     const onCommentAdded = async (newComment: string) => {
         openPost && setPosts((prevPosts: Post[]) => prevPosts?.map((post) => (post._id === openPost._id ? {...openPost, comments: openPost.comments?.concat([newComment])} : post)) || []);
@@ -48,24 +50,23 @@ const PostsPage = ({userId}:{userId?:string}) => {
     };
 
     return (
-        authToken.accessToken
-            ? <>
+        authToken.accessToken ? 
+            <>
+                {!!editedPost ? <PostEditor post={editedPost}/> :
+                <>
                 <Filters {...{ filters, setFilters, getPosts: fetchPosts }}  />
                 <div className='postBoxes'>
                     {posts && posts.length
                         ? posts.map((post: Post) => <PostBox  
-                        {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null, isEditable: !!userId}} />) 
+                        {...{post, setOpenPost, photo: post.photos.length ? post.photos[0] : null, isEditable: !!userId, setEditedPost}} />) 
                         : <Typography className="noResults" variant="h4" color="text.secondary">
                             We couldn't find a property that matches your search... <br />
                             Please try to modify your selections.
                         </Typography>
                     }
                 </div>
-                {openPost && 
-                    <>
-                        <PostDetailsCard {...{openPost, setOpenPost, onCommentAdded}} />
-                    </>
-                }
+                {openPost && <PostDetailsCard {...{openPost, setOpenPost, onCommentAdded}} />}
+                </>}
             </>
             :  <Login/>
 
