@@ -51,11 +51,32 @@ const getAllProperties = async (req, res) => {
 };
 
 const postProperty = async (req, res) => {
-        console.log("postProperty:" + req.body);
-        const property = new Property(req.body.post);
+        console.log("postProperty:" + {...req.body.post});
+        const property = new Property({...JSON.parse(req.body.post)});
     try {
-        await property.save();
-        res.status(201).send("OK");
+        const post = await property.save();
+        if(!!req.files) {
+            req.files.forEach(async photo => {
+                const directoryPath = `./photos/posts/${post._id}`;
+
+                try {
+                    await fs.mkdir(directoryPath, { recursive: true });
+                } catch (err) {
+                    console.error(`Error creating directory: ${err}`);
+                }
+                
+                const { path: filePath, originalname } = photo;
+                try {
+                    const fileContent = await fs.readFile(filePath);
+                    await fs.writeFile(`${directoryPath}/${originalname}`, fileContent);
+                
+                    console.log('File has been written successfully!');
+                } catch (error) {
+                        console.error('Error writing file:', error);
+                    }
+                });
+            };
+            res.status(201).send("OK");
     } catch (err) {
         console.log(err);
         res.status(406).send("fail: " + err.message);
@@ -109,5 +130,5 @@ module.exports = {
     deletePropertyById,
     postPropertyComment,
     getPropertyById,
-    getPropertyPhotos
+    getPropertyPhotos,
 };

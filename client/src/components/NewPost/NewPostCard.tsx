@@ -1,5 +1,5 @@
 import Radio from '@mui/material/Radio';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ContactDetails, Post } from '../types/postTypes';
 import { DealTypeOption, HomeTypeOption, dealTypeOptions, homeTypeOptions } from '../filters/filtersTypes';
@@ -18,6 +18,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { AuthContext, CitiesContext } from '../../App';
 import Button from '@mui/material/Button';
 import { postProperty } from '../../services/postsService';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
+import ImageListItemBar from '@mui/material/ImageListItemBar';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface PostEditorProps {
     post?: Post
@@ -43,7 +48,6 @@ const initialPost = {
 }
 
 const PostEditor = (props: PostEditorProps) => {
-
     const { post } = props;
 
     const [ newPost, setNewPost ] = useState<Post>(post || initialPost);
@@ -66,11 +70,33 @@ const PostEditor = (props: PostEditorProps) => {
     const updateFreeText = (freeText: string) => setNewPost({...newPost, freeText});
     const updateCreator = () => setNewPost({...newPost, creator: authToken.userId});
 
-    const handlePost = () => {
-        postProperty(newPost, authToken.accessToken);
+    const [postPhotos, setPostPhotos] = useState<any[]>([]);
+
+    const handleFileUpload = (event) => {
+        const photos = event.target.files;
+        const photosToSave: SetStateAction<any[]> = [];
+        Array.prototype.forEach.call(photos, (photo: File) => {
+            photosToSave.push(photo)
+        });
+        setPostPhotos(photosToSave)
+    };
+
+    const handlePost = async () => {
+        const formData = new FormData();
+        postPhotos.forEach(photo => formData.append('files', photo))
+        formData.append('post', JSON.stringify(newPost))
+        postProperty(formData, authToken.accessToken);
         setNewPost(initialPost);
-        navigate('/');
+        navigate('/');   
     }   
+
+    const handleRemovePhoto = (index: number) => {
+        setPostPhotos((prevUrls) => {
+            const updatedUrls = [...prevUrls];
+            updatedUrls.splice(index, 1);
+            return updatedUrls;
+        });
+    };
 
     return (
         <div style={{width: '1800px'}}>
@@ -168,6 +194,52 @@ const PostEditor = (props: PostEditorProps) => {
                         <Typography variant="h5" color="text.secondary" sx={{marginRight: '22px'}}>
                             Photos:
                         </Typography>
+                        {Object.keys(newPost.photos).length 
+                            ? <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
+                            {newPost.photos.map((photo) => (
+                                <ImageListItem key={photo.title}>
+                                <img key={photo.title} src={photo.src} alt={photo.title} />
+                                </ImageListItem>
+                            ))}
+                            </ImageList>
+                            : 
+                            <>
+                                <input
+                                    accept="image/*"
+                                    multiple
+                                    type="file"
+                                    onChange={handleFileUpload}
+                                />
+                                <ImageList sx={{display: 'grid', justifyContent: 'center', maxHeight: '380px', maxwidth: '880px'}}>
+                                    {postPhotos.map((image, index) => 
+                                        <div key={index}>
+                                            <ImageListItem key={index}>
+                                                <img src={URL.createObjectURL(image)} alt="Uploaded Image"/>
+                                                <ImageListItemBar 
+                                                    actionPosition="left"
+                                                    position="top"
+                                                    sx={{
+                                                        background:
+                                                        'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
+                                                        'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+                                                    }}
+                                                    actionIcon={
+                                                        <IconButton
+                                                            sx={{ color: 'white' }}
+                                                            onClick={() => handleRemovePhoto(index)}
+                                                            id='adiiiiiii'
+                                                            >
+                                                            <DeleteIcon />
+                                                        </IconButton>   
+                                                    }
+                                                    >
+                                                </ImageListItemBar>
+                                
+                                            </ImageListItem>
+                                        </div>)}
+                                </ImageList>
+                            </>
+                        }
                         
                     </div>
                     <div>
