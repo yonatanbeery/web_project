@@ -8,6 +8,7 @@ const AuthRouter = require("./routes/auth.route");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc"); 
 const cors = require('cors')
+const errorHandler = require('./middlewares/error.middleware');
 
 const setSwagger = (app) => {
   if (process.env.NODE_ENV == "development") {
@@ -36,8 +37,7 @@ const initApp = () => {
     mongoose.connect(process.env.DB_URL).then(() => {
       const app = express();
       app.use(cors());
-
-      app.use(cors())
+      app.use(errorHandler);
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
 

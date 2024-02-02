@@ -69,10 +69,11 @@ const PostEditor = (props: PostEditorProps) => {
     const updateEmailAddress = (EmailAddress: string) => setNewPost({...newPost, contactDetails: {...newPost.contactDetails, EmailAddress} as ContactDetails});
     const updateFreeText = (freeText: string) => setNewPost({...newPost, freeText});
     const updateCreator = () => setNewPost({...newPost, creator: authToken.userId});
+    const [errorMessage, setErrorMessage] = useState<String>();
 
     const [postPhotos, setPostPhotos] = useState<any[]>([]);
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = (event:any) => {
         const photos = event.target.files;
         const photosToSave: SetStateAction<any[]> = [];
         Array.prototype.forEach.call(photos, (photo: File) => {
@@ -82,12 +83,20 @@ const PostEditor = (props: PostEditorProps) => {
     };
 
     const handlePost = async () => {
-        const formData = new FormData();
-        postPhotos.forEach(photo => formData.append('files', photo))
-        formData.append('post', JSON.stringify(newPost))
-        postProperty(formData, authToken.accessToken);
-        setNewPost(initialPost);
-        navigate('/');   
+        if(newPost.dealType && newPost.location && newPost.price && newPost.bathrooms && 
+            newPost.bathrooms && newPost.homeType && newPost.area && newPost.photos.length &&
+            newPost.contactDetails?.EmailAddress && newPost.contactDetails?.name && newPost.contactDetails?.phoneNumber){
+                console.log("sends" ,{newPost})
+                const formData = new FormData();
+                postPhotos.forEach(photo => formData.append('files', photo))
+                formData.append('post', JSON.stringify(newPost))
+                postProperty(formData, authToken.accessToken)?.then(() => {
+                    setNewPost(initialPost);
+                    navigate('/');
+                })
+            } else {
+                setErrorMessage("please fill out all the mendatory fields")
+            }
     }   
 
     const handleRemovePhoto = (index: number) => {
@@ -99,7 +108,7 @@ const PostEditor = (props: PostEditorProps) => {
     };
 
     return (
-        <div style={{width: '1800px'}}>
+        <div style={{width: '95vw'}}>
             <Typography variant="h3" color="text.secondary" sx={{marginTop: '20px'}}>
                 {post ? 'Edit your post' : 'Post your property'}
             </Typography>
@@ -258,6 +267,9 @@ const PostEditor = (props: PostEditorProps) => {
                     Post
                 </Button>
             </div>
+            {errorMessage && <Typography color="red" variant="h6" gutterBottom  sx={{marginRight: 13, marginLeft: 13}}>
+                        {errorMessage}
+                    </Typography>}
         </div>
     )
 }

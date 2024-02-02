@@ -61,7 +61,7 @@ export const postProperty = (formData: FormData, access_token: string) => {
         "Content-Type": "image/form-data" ,
     }
     try {
-        axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, formData, {headers})
+        return axios.post(`${import.meta.env.VITE_SERVER_URL}/properties`, formData, {headers})
     } catch (error) {
         console.error('Error fetching data:', error);
     }
