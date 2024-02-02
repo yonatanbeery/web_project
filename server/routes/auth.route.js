@@ -94,7 +94,7 @@ let upload = multer({ dest: 'photos/users/' })
 *                       $ref: '#/components/schemas/UserLogin'
 *       responses:
 *           200:
-*               description: The acess & refresh tokens
+*               description: The access & refresh tokens
 *               content:
 *                   application/json:
 *                       schema:

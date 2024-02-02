@@ -37,20 +37,21 @@ const Navbar = () => {
       <IconButton onClick={handleClick}>
         <MenuIcon />
       </IconButton>
+      {cookies.refreshToken &&
       <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-      <MenuItem>
+        <MenuItem>
           <Link underline="none" color="black" href='/'>Find homes</Link>
         </MenuItem>
-        {cookies.refreshToken && <MenuItem>
+        <MenuItem>
           <Link underline="none" color="black" href='/Profile'>Your Profile</Link>
-        </MenuItem>}
-        <MenuItem onClick={handleClose}>
-        <Link underline="none" color="black" href='/NewPost'>Create a post</Link>
-          </MenuItem>
+        </MenuItem>
+        <MenuItem>
+          <Link underline="none" color="black" href='/NewPost'>Create a post</Link>
+        </MenuItem>
         <MenuItem onClick={logout}>
         <Link underline="none" color="black" href='/'>Log out</Link>
           </MenuItem>
-      </Menu>
+      </Menu>}
       <Typography className='title' variant="h4">
         Your Next Home
       </Typography>
