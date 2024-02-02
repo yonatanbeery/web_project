@@ -84,9 +84,8 @@ const PostEditor = (props: PostEditorProps) => {
 
     const handlePost = async () => {
         if(newPost.dealType && newPost.location && newPost.price && newPost.bathrooms && 
-            newPost.bathrooms && newPost.homeType && newPost.area && newPost.photos.length &&
+            newPost.bathrooms && newPost.homeType && newPost.area &&
             newPost.contactDetails?.EmailAddress && newPost.contactDetails?.name && newPost.contactDetails?.phoneNumber){
-                console.log("sends" ,{newPost})
                 const formData = new FormData();
                 postPhotos.forEach(photo => formData.append('files', photo))
                 formData.append('post', JSON.stringify(newPost))
