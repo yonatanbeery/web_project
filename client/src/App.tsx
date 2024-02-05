@@ -49,7 +49,7 @@ function App() {
   useEffect(() => {
     if(authToken.accessToken && authToken.refreshToken) {
       setTimeout(() => {        
-        axios.post('http://localhost:8080/auth/refreshToken', {} ,{headers:{
+        axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/refreshToken`, {} ,{headers:{
             authorization: authToken.refreshToken
         }}).then((res) => {
             console.log("refreshed", res.data);
