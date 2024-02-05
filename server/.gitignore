@@ -1,3 +1,7 @@
 node_modules
 coverage
 photos/users
+.envprod
+client-cert.pem
+client-key.pem
+client.csr
