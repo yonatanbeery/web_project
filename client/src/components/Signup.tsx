@@ -25,7 +25,7 @@ const Signup = () => {
             formData.append("email", email);
             formData.append("password", password);
             
-            axios.post('http://localhost:8080/auth/signup', formData, {headers:{ "Content-Type": "image/form-data" }}).then(() => {
+            axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/signup`, formData, {headers:{ "Content-Type": "image/form-data" }}).then(() => {
                 setErrorMessage("");
                 navigate("/");
             }).catch(() => setErrorMessage("Username already exists"));

@@ -25,7 +25,7 @@ const Profile = () => {
             if(changedFields?.email) formData.append("email", email!);
             if(changedFields?.password) formData.append("password", password);
 
-            axios.put('http://localhost:8080/user/updateProfile', formData, {headers:{ 
+            axios.put(`${import.meta.env.VITE_SERVER_URL}/user/updateProfile`, formData, {headers:{ 
                 "Content-Type": "image/form-data" ,
                 "Authorization": authToken.accessToken
             }}).then(() => {
@@ -44,7 +44,7 @@ const Profile = () => {
     };
 
     const setImage = async () => {
-        const response = await fetch('http://localhost:8080/user/getUserImage', {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/user/getUserImage`, {
             method: "GET",
             headers: {
               "Content-Type": "image/png",
@@ -56,7 +56,7 @@ const Profile = () => {
 
     useEffect(() => {
         setImage();
-        axios.get('http://localhost:8080/user/getUserSettings', {headers:{"Authorization": authToken.accessToken}}).then((res) => {
+        axios.get(`${import.meta.env.VITE_SERVER_URL}/user/getUserSettings`, {headers:{"Authorization": authToken.accessToken}}).then((res) => {
             setUsername(res.data.user.username);
             setEmail(res.data.user.email);
         });

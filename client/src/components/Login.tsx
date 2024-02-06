@@ -17,14 +17,14 @@ const Login = () => {
     const loginWithGoogle = useGoogleLogin({
         onSuccess: async (tokenResponse: TokenResponse) => {
             console.log({token:tokenResponse})
-            await axios.post('http://localhost:8080/auth/googleLogin', {data:tokenResponse}).then((res) => {
+            await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/googleLogin`, {data:tokenResponse}).then((res) => {
                 setAuthData(res.data.accessToken, res.data.refreshToken, res.data.userId)
             }).catch(() => setErrorMessage("Cant sign in with google"))},
         onError: () => setErrorMessage("Cant sign in with google")
     });
 
     const loginWithUsername = async () => {
-        await axios.post('http://localhost:8080/auth/login', {data:{username, password}}).then((res) => {
+        await axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {data:{username, password}}).then((res) => {
             setAuthData(res.data.accessToken, res.data.refreshToken, res.data.userId)
         }).catch(() => setErrorMessage("Incorrect username or password"));
     }

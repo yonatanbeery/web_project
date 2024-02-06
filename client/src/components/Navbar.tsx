@@ -21,7 +21,7 @@ const Navbar = () => {
   };
 
     const logout = () => {
-       axios.post('http://localhost:8080/auth/logout', {} ,{headers:{
+       axios.post(`${import.meta.env.VITE_SERVER_URL}/auth/logout`, {} ,{headers:{
             authorization: authToken.refreshToken
         }});
         setCookie("accessToken", "", { path: "/" });
