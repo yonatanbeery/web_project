@@ -5,13 +5,13 @@ const env = require("dotenv").config();
 const initApp = require("./app");
 
 initApp().then((app) => {
-  if (process.env.NODE_ENV == "development") {
+  if (process.env.NODE_ENV === "development") {
     const port = process.env.HTTP_PORT;
     var httpServer = http.createServer(app);
     httpServer.listen(port, () => {
       console.log(`server listening at http://localhost:${port}`);
     });
-  }
+  } else {
     const port = process.env.HTTPS_PORT;
     var privateKey  = fs.readFileSync('./client-key.pem', 'utf8');
     var certificate = fs.readFileSync('./client-cert.pem', 'utf8');
@@ -20,5 +20,6 @@ initApp().then((app) => {
     httpsServer.listen(port, () => {
       console.log(`server listening at https://localhost:${port}`);
     });
+  }
 });
 

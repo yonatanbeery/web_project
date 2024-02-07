@@ -80,6 +80,11 @@ const PostEditor = (props: PostEditorProps) => {
         setPostPhotos(photosToSave)
     };
 
+    const handleDelete = (postId: string) => {
+        delelteProperty(postId, authToken.accessToken);
+        navigate('/');
+    }
+
     const handlePost = async () => {
         if(newPost.dealType && newPost.location && newPost.price && newPost.bathrooms && 
             newPost.bathrooms && newPost.homeType && newPost.area &&
@@ -260,7 +265,7 @@ const PostEditor = (props: PostEditorProps) => {
                 </div>
             </div>
             <div style={{display: 'flex', justifyContent: 'space-between',marginTop: '30px'}}>
-                {post?._id && <Button variant="contained" color="error" size="large" onClick={() => delelteProperty(post?._id!, authToken.accessToken)}>
+                {post?._id && <Button variant="contained" color="error" size="large" onClick={() => handleDelete(post?._id!)}>
                     Delete Post
                 </Button>}
                 <Button variant="contained" color="success" size="large" onClick={handlePost}>

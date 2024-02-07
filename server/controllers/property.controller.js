@@ -18,7 +18,7 @@ const getPropertyPhotos = async (id) => {
 
         return photoDataArray 
     } catch (error) {
-        console.error(`Error reading photos for property ${id}:`, error);
+        //console.error(`Error reading photos for property ${id}:`, error);
         return [] 
     }
 }
@@ -26,16 +26,36 @@ const getPropertyPhotos = async (id) => {
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
     
+    // const query = {
+    //     ...(req.query.creator && { creator: { $eq: req.query.creator } }),
+    //     ...(req.query.price?.maxPrice && { price: { $lte: req.query.price.maxPrice } }),
+    //     ...(req.query.price?.minPrice && { price: { $gte: req.query.price.minPrice } }),
+    //     ...(req.query.location && { location: req.query.location }),
+    //     ...(req.query.dealType && { dealType: req.query.dealType }),
+    //     ...(req.query.homeType && { homeType: req.query.homeType }),
+    //     ...(req.query.bedrooms && { bedrooms: { $gte: req.query.bedrooms } }),
+    //     ...(req.query.bathrooms && { bathrooms: { $gte: req.query.bathrooms } }),
+    // };
     const query = {
         ...(req.query.creator && { creator: { $eq: req.query.creator } }),
-        ...(req.query.price?.maxPrice && { price: { $lte: req.query.price.maxPrice } }),
-        ...(req.query.price?.minPrice && { price: { $gte: req.query.price.minPrice } }),
         ...(req.query.location && { location: req.query.location }),
         ...(req.query.dealType && { dealType: req.query.dealType }),
         ...(req.query.homeType && { homeType: req.query.homeType }),
-        ...(req.query.minBedrooms && { bedrooms: { $gte: req.query.minBedrooms } }),
-        ...(req.query.minBathrooms && { bathrooms: { $gte: req.query.minBathrooms } }),
+        ...(req.query.bedrooms && { bedrooms: { $gte: req.query.bedrooms } }),
+        ...(req.query.bathrooms && { bathrooms: { $gte: req.query.bathrooms } }),
     };
+    
+    if (req.query.price) {
+        const priceQuery = {};
+        if (req.query.price.minPrice && req.query.price.maxPrice) {
+            priceQuery.price = {
+                $gte: req.query.price.minPrice,
+                $lte: req.query.price.maxPrice
+            };
+        } else if (req.query.price.minPrice) priceQuery.price = { $gte: req.query.price.minPrice }
+        else if (req.query.price.maxPrice) priceQuery.price = { $lte: req.query.price.maxPrice };
+        Object.assign(query, priceQuery);
+    }
 
     try {
         let properties = req.query ? await Property.find(query) : await Property.find();
@@ -67,6 +87,7 @@ const postProperty = async (req, res) => {
                 }
                 
                 const { path: filePath, originalname } = photo;
+
                 try {
                     const fileContent = await fs.readFile(filePath);
                     await fs.writeFile(`${directoryPath}/${originalname}`, fileContent);
@@ -103,7 +124,7 @@ try {
     property.comments = updatedPost.comments;
     property.creator = updatedPost.creator;
     property.save()
-    if(req.files.length > 0) {
+    if(req.files?.length > 0) {
         const directoryPath = `./photos/posts/${req.params.id}`;
         try {
             await fs.rm(directoryPath, { recursive: true });

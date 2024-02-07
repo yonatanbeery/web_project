@@ -6,7 +6,7 @@ import PostsPage from "../posts/PostsPage";
 const MyPosts = () => {
     const {authToken} = useContext(AuthContext);
 
-    return <PostsPage userId={authToken.userId}/>
+    return <PostsPage />
 };
 
 export default MyPosts;
