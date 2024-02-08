@@ -113,6 +113,7 @@ try {
     property.comments = updatedPost.comments;
     property.creator = updatedPost.creator;
     property.save()
+    
     if(req.files?.length > 0) {
         const directoryPath = `./photos/posts/${req.params.id}`;
         try {
