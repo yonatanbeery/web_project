@@ -18,7 +18,6 @@ const getPropertyPhotos = async (id) => {
 
         return photoDataArray 
     } catch (error) {
-        //console.error(`Error reading photos for property ${id}:`, error);
         return [] 
     }
 }
@@ -26,16 +25,6 @@ const getPropertyPhotos = async (id) => {
 const getAllProperties = async (req, res) => {
     console.log("getAllProperties");
     
-    // const query = {
-    //     ...(req.query.creator && { creator: { $eq: req.query.creator } }),
-    //     ...(req.query.price?.maxPrice && { price: { $lte: req.query.price.maxPrice } }),
-    //     ...(req.query.price?.minPrice && { price: { $gte: req.query.price.minPrice } }),
-    //     ...(req.query.location && { location: req.query.location }),
-    //     ...(req.query.dealType && { dealType: req.query.dealType }),
-    //     ...(req.query.homeType && { homeType: req.query.homeType }),
-    //     ...(req.query.bedrooms && { bedrooms: { $gte: req.query.bedrooms } }),
-    //     ...(req.query.bathrooms && { bathrooms: { $gte: req.query.bathrooms } }),
-    // };
     const query = {
         ...(req.query.creator && { creator: { $eq: req.query.creator } }),
         ...(req.query.location && { location: req.query.location }),
