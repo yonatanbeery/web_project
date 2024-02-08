@@ -1,8 +1,8 @@
 const request = require("supertest");
 const initApp = require("../app");
 const mongoose = require("mongoose");
-const User = require("../models/users.model");
 const Property = require("../models/property.model");
+const User = require("../models/users.model");
 
 const username = "test";
 const password = "123";
