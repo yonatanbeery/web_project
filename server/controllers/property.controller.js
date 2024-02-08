@@ -87,6 +87,7 @@ const postProperty = async (req, res) => {
                     }
                 });
             };
+
             res.status(201).send("OK");
     } catch (err) {
         console.log(err);
@@ -96,7 +97,7 @@ const postProperty = async (req, res) => {
 
 
 const updateProperty = async (req, res) => {
-    console.log("updateProperty:");
+    console.log("updateProperty: ");
     const updatedPost = JSON.parse(req.body.post);
     console.log({...JSON.parse(req.body.post)});
 try {
@@ -113,7 +114,7 @@ try {
     property.comments = updatedPost.comments;
     property.creator = updatedPost.creator;
     property.save()
-    
+
     if(req.files?.length > 0) {
         const directoryPath = `./photos/posts/${req.params.id}`;
         try {
