@@ -21,7 +21,7 @@ export const CitiesContext = createContext<{cities: string[]}>({cities: []});
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PostsPage />,
+    element: <PostsPage isUsersPosts={false}/>,
   },
   {
     path: "/Signup",

@@ -4,9 +4,8 @@ import PostsPage from "../posts/PostsPage";
 
 
 const MyPosts = () => {
-    const {authToken} = useContext(AuthContext);
 
-    return <PostsPage />
+    return <PostsPage isUsersPosts={true}/>
 };
 
 export default MyPosts;

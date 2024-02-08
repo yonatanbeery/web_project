@@ -12,7 +12,12 @@ import PostDetailsCard from "./PostDetailsCard";
 import { Buffer } from 'buffer';
 import PostEditor from "../NewPost/NewPostCard";
 
-const PostsPage = () => {
+interface PostsPageProps {
+    isUsersPosts: boolean
+}
+
+const PostsPage = (props: PostsPageProps) => {
+    const { isUsersPosts } = props;
     const {authToken} = useContext(AuthContext);
     const [posts, setPosts] = useState<Post []>([]);
     const [openPost, setOpenPost] = useState<Post | null>();
@@ -31,7 +36,7 @@ const PostsPage = () => {
 
     const fetchPosts = async () => {
         try {
-            filters.creator = authToken.userId;
+            if (isUsersPosts) filters.creator = authToken.userId;
             const response = await getPosts(filters, authToken.accessToken);
             const costumPosts : Post[] = response?.data.map((post: Post) => ({
                 ...post,
