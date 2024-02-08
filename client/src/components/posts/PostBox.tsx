@@ -33,7 +33,7 @@ const PostBox = (props: PostProps & {setEditedPost: any}) => {
                         {price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} $
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {bedrooms} bds | {bathrooms} ba | {area} sqft - House for {dealType} 
+                        {bedrooms} bds | {bathrooms} ba | {area} sqft - {homeType} for {dealType} 
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         {homeType} in {location}

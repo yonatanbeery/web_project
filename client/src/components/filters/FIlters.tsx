@@ -24,7 +24,7 @@ const Filters = (filtersProp: FiltersProps ) => {
     const updateLocation = ((location: string) => setFilters({...filters, location}));
     const updateDealType = (newDealType: FiltersOptions['dealType']) => setFilters({...filters, dealType: newDealType});
     const updatPrice = (newPrice: Price) => setFilters({...filters, price: newPrice});
-    const updateMinBedrooms = (updatedBedrooms: number) => setFilters({...filters, bathrooms: updatedBedrooms as RoomsOption});
+    const updateMinBedrooms = (updatedBedrooms: number) => setFilters({...filters, bedrooms: updatedBedrooms as RoomsOption});
     const updateMinBathrooms = (updatedBathrooms: number) => setFilters({...filters, bathrooms: updatedBathrooms as RoomsOption});
     const updateHomeType = (newHomeType: FiltersOptions['homeType']) => setFilters({...filters, homeType: newHomeType});
 

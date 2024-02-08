@@ -1,22 +1,26 @@
 const request = require("supertest");
 const initApp = require("../app");
 const mongoose = require("mongoose");
+const Property = require("../models/property.model");
 const User = require("../models/users.model");
 
 const username = "test";
 const password = "123";
 let accessToken = "";
 let refreshToken = "";
+let creator = "";
 let app;
 
 beforeAll(async () => {
   app = await initApp();
   console.log("beforeAll");
   await User.deleteMany({username})
+  await Property.deleteMany({creator: "-99999"})
 });
 
 afterAll(async () => {
   await User.deleteMany({username})
+  await Property.deleteMany({creator: "-99999"})
   await mongoose.connection.close();
 });
 
@@ -29,9 +33,7 @@ describe("Auth tests", () => {
 
   test("add new user ", async () => {
     const res = await request(app).post("/auth/signup").send({
-      data:{
-        username, email:"world", password
-      }
+      username, email:"world", password
     });
     console.log(res);
     expect(res.statusCode).toBe(200);
@@ -54,6 +56,7 @@ describe("Auth tests", () => {
     });
     accessToken = response.body.accessToken;
     refreshToken = response.body.refreshToken;
+    creator = response.body.userId
     expect(response.statusCode).toBe(200);
     expect(accessToken).not.toBe(null);
     expect(refreshToken).not.toBe(null);
@@ -67,49 +70,70 @@ describe("Auth tests", () => {
   });
 });
 
-/*
+const newPost = '{"photos":[],"location":"ABU GHOSH","dealType":"rent","price":120000,"bedrooms":1,"bathrooms":2,"homeType":"house","area":1212,"contactDetails":{"name":"asd","phoneNumber":"asd","EmailAddress":"asd"},"freeText":"","creator":"-99999"}'
+let newPostId = ''
+const filters = {
+  location: "ABU GHOSH",
+  dealType: "rent",
+  price: {
+    minPrice: 10,
+    maxPrice: 10000000000
+  },
+  bathrooms: 2,
+  bedrooms: 1,
+  homeType: "house"
+}
+
 describe("Posts tests", () => {
-  const addStudent = async (student) => {
-    const response = await request(app).post("/student").send(student);
-    expect(response.statusCode).toBe(201);
-    expect(response.text).toBe("OK");
-  };
-  test("Test Get All Students - empty response", async () => {
-    const response = await request(app).get("/student");
+  test("add new post ", async () => {
+    const res = await request(app).post("/properties").set({authorization: accessToken}).send({
+      post: newPost
+    });
+    expect(res.statusCode).toBe(201);
+  });
+
+  test("Test Get All Properties", async () => {
+    const response = await request(app).get("/properties").set({authorization: accessToken});
     expect(response.statusCode).toBe(200);
-    expect(response.body).toStrictEqual([]);
+    expect(response.body.length).toBeGreaterThanOrEqual(1);
+  });
+  
+  test("Test Get All Properties - with full filters", async () => {
+    const response = await request(app).get("/properties").query(filters).set({authorization: accessToken});
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("Test Post Student", async () => {
-    addStudent(student);
+  test("Test Get All Properties - empty response", async () => {
+    const response = await request(app).get("/properties").query({...filters, price: {minPrice: 1, maxPrice: -1}}).set({authorization: accessToken});
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(0);
   });
 
-  test("Test Get All Students with one student in DB", async () => {
-    const response = await request(app).get("/student");
+  test("Test Get All Users Properties", async () => {
+    const response = await request(app).get("/properties").query({creator: "-99999"}).set({authorization: accessToken});
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
-    const st = response.body[0];
-    expect(st.name).toBe(student.name);
-    expect(st._id).toBe(student._id);
+    newPostId = response.body[0]._id;
   });
 
-  test("Test Post duplicate Student", async () => {
-    const response = await request(app).post("/student").send(student);
-    expect(response.statusCode).toBe(406);
+  test("Test Edit Property", async () => {
+    const updatedProperty = newPost.replace("ABU GHOSH", "UDIM")
+    const response = await request(app).put(`/properties/${newPostId}`).set({authorization: accessToken}).send({post: updatedProperty});
+    expect(response.statusCode).toBe(201);
   });
 
-  test("Test PUT /student/:id", async () => {
-    const updatedStudent = { ...student, name: "Jane Doe 33" };
-    const response = await request(app)
-      .put(`/student/${student._id}`)
-      .send(updatedStudent);
-    expect(response.statusCode).toBe(200);
-    expect(response.body.name).toBe(updatedStudent.name);
+  test("Test Post Comment", async () => {
+    const res = await request(app).post("/properties/postComment").set({authorization: accessToken}).send({
+      id: newPostId,
+      comment: "Hello World!"
+    });
+    expect(res.statusCode).toBe(200);
   });
 
-  test("Test DELETE /student/:id", async () => {
-    const response = await request(app).delete(`/student/${student._id}`);
+  test("Test Delete Property", async () => {
+    const response = await request(app).delete(`/properties/${newPostId}`).set({authorization: accessToken});
     expect(response.statusCode).toBe(200);
   });
-});*/
+});
 
